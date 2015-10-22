@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+################################################################
+################################################################
+####### VM configuration. DON'T FORGET TO CHANGE THESE  ########
+################################################################
+################################################################
+
+http_proxy = 'http://172.28.40.9:3128'
+
+mh_vm_basebox = 'ubuntu/trusty64'
+mh_vm_ram = '8192'
+mh_vm_cpus = '4'
+################################################################
+
+
+Vagrant.configure(2) do |config|
+
+	config.ssh.username = 'vagrant'
+	config.ssh.password = 'vagrant'
+
+    if !http_proxy.eql?''
+        if Vagrant.has_plugin?('vagrant-proxyconf')
+            config.proxy.http = http_proxy
+            config.proxy.https = http_proxy
+            config.proxy.no_proxy = 'localhost,127.0.0.1'
+        else
+            abort("vagrant-proxyconf plugin missing. Exiting.")
+        end
+    end
+
+    config.ssh.shell = 'bash -c "BASH_ENV=/etc/profile exec bash"'
+
+    config.vm.define 'mh_ubuntu_box' do |machine|
+
+	    machine.vm.box = mh_vm_basebox
+
+        machine.vm.provider :virtualbox do |vb|
+            # Display the VirtualBox GUI when booting the machine
+            #vb.gui = true
+
+            # Customize the amount of memory on the VM:
+            vb.memory = mh_vm_ram
+            vb.cpus = mh_vm_cpus
+        end
+    end
+
+    config.vm.provision :shell, privileged: true, :path => 'provisioning/provision.sh'
+    config.vm.provision :shell, privileged: true, :path => 'provisioning/zero-disk.sh'
+
+end

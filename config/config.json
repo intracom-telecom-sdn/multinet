@@ -1,0 +1,25 @@
+{
+	"config_file": "config/test-config.json",
+	"master_ip" : "10.1.1.90",
+	"master_port": 3300,
+	"worker_port_list": [3333, 3335],
+	"worker_ip_list": ["10.1.1.90", "10.1.1.91"],
+
+	"deploy": {
+		"multinet_base_dir": "/home/vagrant/multinet",
+		"ssh_port": 22,
+		"username": "vagrant",
+		"password": "vagrant"
+	},
+
+	"topo": {
+		"controller_ip_address":"10.1.1.39",
+		"controller_of_port":6653,
+		"switch_type":"ovsk",
+		"topo_type":"linear",
+		"topo_size":30,
+		"group_size":3,
+		"group_delay":100,
+		"hosts_per_switch":2
+	}
+}

@@ -1,0 +1,82 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+################################################################
+################################################################
+####### VM configuration. DON'T FORGET TO CHANGE THESE  ########
+################################################################
+################################################################
+http_proxy = ''
+mh_vm_basebox = 'mh-provisioned'
+mh_vm_ram_mini = '2048'
+mh_vm_cpus_mini = '2'
+num_multinet_vms = 2
+mh_vm_private_network_ip_mini = '10.1.1.90' # the first IP Address in the  multinet VMs IP Address range
+forwarded_ports_master = []
+forwarded_ports_host = []
+################################################################
+
+
+Vagrant.configure(2) do |config|
+
+    config.ssh.username = 'vagrant'
+    config.ssh.password = 'vagrant'
+
+    if !http_proxy.eql?''
+        if Vagrant.has_plugin?('vagrant-proxyconf')
+            config.proxy.http = http_proxy
+            config.proxy.https = http_proxy
+        else
+            abort("vagrant-proxyconf plugin missing. Exiting.")
+        end
+    end
+
+    #TODO: change rsync to nfs
+    #config.vm.synced_folder '.', '/vagrant', type: 'rsync'
+
+    #If tty is not available
+    config.ssh.shell = 'bash -c "BASH_ENV=/etc/profile exec bash"'
+
+
+    # Configure multinet VMs
+    mh_vm_hostname_mini = 'multinet'
+
+    (1..num_multinet_vms).each do |mn_vm|
+
+        # Assign adjacent IP addresses to all multinet VMs
+        last_ip_digit = mh_vm_private_network_ip_mini[-1].to_i
+        new_last_ip_digit = last_ip_digit + (mn_vm - 1)
+        base_ip = mh_vm_private_network_ip_mini[0..-2]
+        mh_vm_private_network_ip_mini_inst = base_ip + new_last_ip_digit.to_s
+
+        puts "multinet VM " + mn_vm.to_s + " IP: " + mh_vm_private_network_ip_mini_inst
+
+        uid_mini = ENV.has_key?('VM_UID') ? '_' + ENV['VM_UID'].split('-')[0] : '_' + mh_vm_private_network_ip_mini_inst
+        mh_vm_name_mini_inst = 'mh_ubuntu_box_'  + ENV['USER'] + uid_mini + '_mini' + "_" + mn_vm.to_s
+
+        mh_vm_hostname_mini_inst = mh_vm_hostname_mini + "-" + mn_vm.to_s
+
+        config.vm.define mh_vm_name_mini_inst do |machine|
+            machine.proxy.no_proxy = 'localhost,127.0.0.1,' + mh_vm_private_network_ip_mini_inst
+            machine.vm.box = mh_vm_basebox
+            machine.vm.host_name = mh_vm_hostname_mini_inst + '.' + mh_vm_hostname_mini_inst
+            machine.vm.network :private_network, ip: mh_vm_private_network_ip_mini_inst, nictype: "virtio"
+
+            if mn_vm == 1
+                forwarded_ports_master.zip(forwarded_ports_host).each do |guest_port, host_port|
+                    machine.vm.network 'forwarded_port', guest: guest_port, host: host_port, auto_correct: true
+                end
+            end
+
+            machine.vm.provider :virtualbox do |vb|
+                # Display the VirtualBox GUI when booting the machine
+                #vb.gui = true
+                # Customize the amount of memory on the VM:
+                vb.memory = mh_vm_ram_mini
+                vb.cpus = mh_vm_cpus_mini
+            end
+        end
+    end
+
+
+end

@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+"""Detect the hosts in the topologies
+Command line handler to make the hosts visible to
+the SDN Controller hosttracker.
+Makes every host perform a ping to send a PACKET_IN
+to the controller
+"""
+
+import util.multinet_requests as m_util
+
+
+def detect_hosts_handler_main():
+    """Main
+    Send a POST request to the master 'detect_hosts' endpoint, 
+    validate the response code and print the responses
+
+    Usage: 
+      bin/handler/detect_hosts --json-config <path-to-json-conf>
+
+    Example:
+      bin/handler/detect_hosts --json-config config/runtime_config.json
+
+    Command Line Arguments:
+      json-config (str): Path to the JSON configuration file to be used
+    """
+    conf = m_util.parse_json_conf()
+
+    res = m_util.master_cmd(conf['master_ip'],
+                            conf['master_port'],
+                            'detect_hosts')
+
+    m_util.handle_post_request(res, exit_on_fail=True)
+
+if __name__ == '__main__':
+    detect_hosts_handler_main()
