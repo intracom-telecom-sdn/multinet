@@ -1,0 +1,42 @@
+# Copyright (c) 2015 Intracom S.A. Telecom Solutions. All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+
+sudo: required
+dist: trusty
+
+
+language: python
+python:
+  - "2.7"
+
+
+virtualenv:
+  system_site_packages: true
+
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y python-bottle python-requests
+
+# command to install dependencies
+install: 
+  - pip install -r requirements.txt
+  - pip install -U pytest
+  - sudo bash travis-jobs/install-mininet.sh
+
+before_script:
+  - sudo bash travis-jobs/create_user.sh
+  - sudo cp -r `pwd` /opt/
+
+script:
+  - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
+  - cat /tmp/multinet/master_log.txt
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt 
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt 
+  - ps aux | grep python
+  - PYTHONPATH=/opt/multinet py.test test
+  - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
