@@ -204,7 +204,7 @@ A dedicated script exist to revert the Multinet deployment. To clean the VMs of 
 
 1. Make sure the master / worker IP addresses and ports in the
    `config/config.json` file are properly configured. Then configure
-   the `topo` options
+   the `topo` options:
 
    ```json
    {
