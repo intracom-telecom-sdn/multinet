@@ -38,7 +38,6 @@ Eventually, one of the key questions that we try to answer through Multinet is:
 _what is the best time to boot-up a topology of S Mininet switches with the least
 amount of resources_?
 
-
 ## Features
 
 - __Large-scale SDN networks__ emulation, using multiple isolated Mininet
@@ -204,7 +203,7 @@ A dedicated script exist to revert the Multinet deployment. To clean the VMs of 
 
 1. Make sure the master / worker IP addresses and ports in the
    `config/config.json` file are properly configured. Then configure
-   the `topo` options
+   the `topo` options:
 
    ```json
    {
@@ -363,7 +362,7 @@ topology has many hosts.
 
 #### Stop Multinet topologies  
 
-Run the following command inside the end user machine  
+Run the following command inside the end user machine:  
 
    ```bash
    [user@machine multinet/]$ bin/handlers/stop_topos --json-config <path-to-config-file>
