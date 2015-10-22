@@ -363,7 +363,7 @@ topology has many hosts.
 
 #### Stop Multinet topologies  
 
-Run the following command inside the end user machine  
+Run the following command inside the end user machine:  
 
    ```bash
    [user@machine multinet/]$ bin/handlers/stop_topos --json-config <path-to-config-file>
