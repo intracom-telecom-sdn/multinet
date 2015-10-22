@@ -38,7 +38,6 @@ Eventually, one of the key questions that we try to answer through Multinet is:
 _what is the best time to boot-up a topology of S Mininet switches with the least
 amount of resources_?
 
-
 ## Features
 
 - __Large-scale SDN networks__ emulation, using multiple isolated Mininet
