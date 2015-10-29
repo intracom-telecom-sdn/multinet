@@ -152,6 +152,7 @@ class Multinet(mininet.net.Mininet):
             params = topo.nodeInfo(switchName)
             cls = params.get('cls', self.switch)
             params['dpid'] = None
+            params['protocols'] = 'OpenFlow13'
             #if hasattr(cls, 'batchStartup'):
             #    params.setdefault('batch', True)
             self.addSwitch(switchName, **params)
