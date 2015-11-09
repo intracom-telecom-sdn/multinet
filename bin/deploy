@@ -37,7 +37,7 @@ if __name__ == '__main__':
     worker_ips = conf['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
     # TODO hard-coded for now, fix later
-    config_file = conf['config_file']
+    config_file = '/tmp/multinet/{0}'.format(conf['config_file'])
     pythonpath = ':'.join(['/'.join(master_remote_path.split('/')[:-2])] + sys.path)[1:]
     logging.info('PYTHONPATH=%s' % pythonpath)
     master_boot_command = (

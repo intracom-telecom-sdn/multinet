@@ -1,9 +1,9 @@
 {
-	"config_file": "config/test-config.json",
-	"master_ip" : "10.1.1.90",
+	"config_file": "config/config.json",
+	"master_ip" : "10.1.21.40",
 	"master_port": 3300,
-	"worker_port_list": [3333, 3335],
-	"worker_ip_list": ["10.1.1.90", "10.1.1.91"],
+	"worker_port_list": [3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333],
+	"worker_ip_list": ["10.1.21.40", "10.1.21.41", "10.1.21.42", "10.1.21.43", "10.1.21.44", "10.1.21.45", "10.1.21.46", "10.1.21.47", "10.1.21.48", "10.1.21.49"],
 
 	"deploy": {
 		"multinet_base_dir": "/home/vagrant/multinet",
@@ -13,13 +13,13 @@
 	},
 
 	"topo": {
-		"controller_ip_address":"10.1.1.39",
+		"controller_ip_address":"10.1.21.35",
 		"controller_of_port":6653,
 		"switch_type":"ovsk",
 		"topo_type":"linear",
-		"topo_size":30,
-		"group_size":3,
-		"group_delay":100,
-		"hosts_per_switch":2
+		"topo_size":300,
+		"group_size":1,
+		"group_delay":2000,
+		"hosts_per_switch":0
 	}
 }
