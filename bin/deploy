@@ -32,7 +32,7 @@ if __name__ == '__main__':
     master_ip = conf['master_ip']
     master_port = conf['master_port']
     ssh_port = conf['deploy']['ssh_port']
-    worker_port = conf['worker_port']
+    worker_port_list = conf['worker_port_list']
     username = conf['deploy']['username']
     password = conf['deploy']['password']
     worker_ips = conf['worker_ip_list']
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     time.sleep(1)
 
 
-    for curr_ip in worker_ips:
+    for curr_ip, worker_port in zip(worker_ips,worker_port_list):
         worker_boot_command = (
             'sudo PYTHONPATH={0} python {1} --rest-host {2} --rest-port {3} > {1}_{2}_{3}_log.txt 2>&1 &'. format(
                 pythonpath,
