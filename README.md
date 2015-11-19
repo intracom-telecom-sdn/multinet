@@ -241,7 +241,7 @@ following instructions
 
 _Gradual Bootup_
 
-We observed that the Opendaylight SDN controller displays some
+We observed that most SDN controllers display some
 instability issues when it is overwhelmed with switch additions.  
 The solution we pose to this problem is the gradual switch bootup.  
 In more detail, we modified the Mininet `start` method as follows
