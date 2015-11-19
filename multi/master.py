@@ -136,7 +136,7 @@ def rest_start():
     global WORKER_PORT_LIST
     global WORKER_IP_LIST
 
-    runtime_config = m_util.parse_json_conf()
+    runtime_config, _ = m_util.parse_json_conf()
 
     master_ip = runtime_config['master_ip']
     master_port = runtime_config['master_port']

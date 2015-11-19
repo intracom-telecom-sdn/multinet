@@ -21,7 +21,7 @@ def get_switches_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf = m_util.parse_json_conf()
+    conf, _ = m_util.parse_json_conf()
 
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],

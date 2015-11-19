@@ -24,21 +24,21 @@ if __name__ == '__main__':
         json-config (str): Path to the JSON configuration file to be used
     """
 
-    conf = m_util.parse_json_conf()
+    conf, config_filename = m_util.parse_json_conf()
+    config_filename = config_filename.split('/')[-1]
 
     worker_remote_path = '/tmp/multinet/multi/worker.py'
     master_remote_path = '/tmp/multinet/multi/master.py'
     master_ip = conf['master_ip']
     master_port = conf['master_port']
     ssh_port = conf['deploy']['ssh_port']
-    worker_port_list = conf['worker_port_list']
+    worker_port = conf['worker_port']
     username = conf['deploy']['username']
     password = conf['deploy']['password']
     worker_ips = conf['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
-    # TODO hard-coded for now, fix later
-    config_file = '/tmp/multinet/{0}'.format(conf['config_file'])
-    pythonpath = ':'.join(['/'.join(master_remote_path.split('/')[:-2])] + sys.path)[1:]
+    config_file = '/tmp/multinet/config/{0}'.format(config_filename)
+    pythonpath = '/tmp/multinet'
     logging.info('PYTHONPATH=%s' % pythonpath)
     master_boot_command = (
         'PYTHONPATH={0} python {1} --json-config {2} > /tmp/multinet/master_log.txt 2>&1 &'.format(
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     time.sleep(1)
 
 
-    for curr_ip, worker_port in zip(worker_ips, worker_port_list):
+    for curr_ip in worker_ips:
         worker_boot_command = (
             'sudo PYTHONPATH={0} python {1} --rest-host {2} --rest-port {3} > {1}_{2}_{3}_log.txt 2>&1 &'. format(
                 pythonpath,

@@ -38,7 +38,7 @@ def parse_json_conf():
     conf = {}
     with open(args.json_config) as conf_file:
         conf = json.load(conf_file)
-    return conf
+    return conf, args.json_config
 
 
 def dpid_offset_range(num_vms):

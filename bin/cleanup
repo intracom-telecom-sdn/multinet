@@ -38,7 +38,7 @@ if __name__ == '__main__':
         json-config (str): Path to the JSON configuration file to be used
     """
 
-    conf = m_util.parse_json_conf()
+    conf, _ = m_util.parse_json_conf()
 
     master_ip = conf['master_ip']
     master_port = conf['master_port']
