@@ -65,7 +65,7 @@ amount of resources_?
 To use Multinet you should have a distributed environment of machines configured
 as follows:
 
-- Software dependences:
+- Software dependencies:
     - Python 2.7
     - `bottle`, `requests` and `paramiko` Python packages
     - a recent version of Mininet (we support 2.2.1rc)
@@ -81,10 +81,9 @@ If you already have a custom environment set up, jump to
 
 #### Environment setup using Vagrant
 
-You could also use `vagrant` to setup a testing environment quickly. 
+You can use Vagrant to setup a testing environment quickly. 
 Using the provided `Vagrantfile` you can boot a configurable number of 
 fully provisioned VMs in a private network and specify their IP scheme.  
-If you already have a testing environment you can skip this step.  
 
 Under the `vagrant` directory we provide scripts and Vagrantfiles to
 automatically setup a distributed environment of VMs to run Multinet. The steps
@@ -159,19 +158,20 @@ You should now have a number of interconnected VMs with all the dependencies ins
 
 #### Deploy Multinet on the distributed environment
 
-The next phase is the deployment phase. We need to copy the `Multinet` files 
-in each VM and start the `master` and the `workers`.  
-We provide a `deploy` script that automates this process. To use it follow the 
-following instructions
+The goal of this phase is to deploy the Multinet master and worker nodes on a set of 
+up and running physical or virtual machines satisfying the conditions mentioned above. 
+The provided `deploy` script automates the process of copying the required files on 
+each machine and starting the `master` and `worker` REST servers. 
 
-1. Clone the Multinet repository in the local machine  
-2. Configure `config/config.json` with the IP scheme of your VMs:  
+1. Clone the Multinet repository on your local machine (acts as a front-end to the 
+   Multinet nodes)
+2. Configure `config/config.json` with the IP scheme of your machines:  
    ```json
    {
       "master_ip" : "10.1.1.80",
       "master_port": 3300,
-      "worker_port": 3333,
       "worker_ip_list": ["10.1.1.80", "10.1.1.81"],
+      "worker_port": 3333,
 
       "deploy": {
         "multinet_base_dir": "/home/vagrant/multinet",
