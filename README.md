@@ -161,7 +161,7 @@ You should now have a number of interconnected VMs with all the dependencies ins
 
 To start using Multinet, the first step is to clone the Multinet repository on your 
 local machine. This machine is supposed to act as the __client machine__ to Multinet, and is 
-denoted in the following examples with the `[user@multinet]` prompt.
+denoted in the following examples with the `[user@machine]` prompt.
 
 Once you have the repository checked out, you may proceed with some configuration. 
 
@@ -227,7 +227,7 @@ Edit the configuration file to the desired topology features:
 - `switch_type` is the type of soft switch used for the emulation 
    (supported types: `ovsk` for OVS OF1.3 switches, `user` for CPqD OF1.3 switches)
 - `topo_type` is the type of topologies to be booted on every worker 
-   node (supported types: `linear`, `mesh`, `ring`, `disconnected`)
+   node (out of the box supported types: `linear`, `mesh`, `ring`, `disconnected`)
 - `topo_size` is the size of topologies to be booted on every worker node
 - `group_size`, `group_delay` are the parameters defining the gradual
    bootup groups (see section below)
@@ -306,7 +306,7 @@ an error message will be printed.
 
 ##### Get the number of switches
 
-To query Multinet for the total number of booted switches, run the 
+To query Multinet for the number of booted switches on each worker node, run the 
 following command from the client machine:
 
    ```bash
@@ -314,7 +314,7 @@ following command from the client machine:
    ```
 
 If the distributed topologies have been successfully booted, you should
-get a `200 OK` message and the number of switches booted.  
+get a `200 OK` message and the number of switches booted on each worker node.  
 
 
 ##### Do a pingall operation
@@ -431,7 +431,7 @@ with its topology on a separate machine.
 ##### Via REST 
 
 To make easier the communication between a client application and the master node, we augmented it
-with a REST server and API. The client application can issue the POST requests shown below to interact with 
+with a REST API. The client application can issue the POST requests shown below to interact with 
 Multinet programmatically. In essence, the command line handlers presented in the previous sections are 
 wrapper scripts to those POST requests. 
 
