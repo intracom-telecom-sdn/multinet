@@ -53,8 +53,7 @@ if __name__ == '__main__':
 
     ssh_sessions = {}
     copy_dest_ips = worker_ips + [master_ip] if master_ip not in worker_ips else worker_ips
-    copy_dest_ports = worker_port_list + [master_port] if master_port
-    not in worker_port_list else worker_port_list
+    copy_dest_ports = worker_port_list + [master_port] if master_port not in worker_port_list else worker_port_list
     for curr_ip, worker_port in zip(copy_dest_ips, copy_dest_ports):
         print('Initiating session with Multinet VM.')
         session = util.netutil.ssh_connect_or_return(curr_ip, username,
