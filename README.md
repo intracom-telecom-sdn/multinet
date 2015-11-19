@@ -256,7 +256,7 @@ This step initializes the distributed topologies _without connecting them to
 the controller_. It creates every necessary component of the topology, such 
 as switches, links, hosts, etc. 
 
-Run the following command from the cline machine: 
+Run the following command from the client machine: 
 
    ```bash
    [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
@@ -289,7 +289,7 @@ gradual booting process independent from the others, without employing any
 kind of intermediate synchronization. 
 
 To connect a Multinet topology after it has been initialized, run the following 
-command: 
+command from the client machine: 
 
    ```bash
    [user@machine multinet/]$ bin/handlers/start_topos --json-config config/config.json
@@ -302,110 +302,73 @@ output message on the client machine. If any topology fails to connect,
 an error message will be printed.
 
 
-#### Interact with the topologies
-
-##### Make the hosts visible
-
-When we where using the Opendaylight controller, we observed that the
-hosts where not automatically visible on creation by the L2 switch plugin, 
-rather they became visible when they generated traffic.  
-While this is a rather logical assumption, it has its limitations when
-implementing automatic lifecycle management tools for the controller stress
-testing. The solution we implemented is to perform a ping from each host to
-send some `PACKET_IN` openflow packets to the controller in order to detect
-the hosts.  
-
-
-Run the following command inside the end user machine  
-
-   ```bash
-   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config <path-to-config-file>
-   ```
-
-For example:
-
-   ```bash
-   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config config/config.json
-   ```
-
-This command should run __after__ the `start` command.  
-It sends a `detect_hosts` command to every worker machine in parallel to make
-the hosts visible in the controller side.  
-If all the topologies are booted successfully you should synchronously
-get a `200 OK` response code.  
-_Note_ that a `detect_hosts` operation may take a long time to complete if the
-topology has many hosts.
+#### Interact with Multinet topology
 
 ##### Get the number of switches
 
-Run the following command inside the end user machine  
-
-   ```bash
-   [user@machine multinet/]$ bin/handlers/get_switches --json-config <path-to-config-file>
-   ```
-
-For example:
+To query Multinet for the total number of booted switches, run the 
+following command from the client machine:
 
    ```bash
    [user@machine multinet/]$ bin/handlers/get_switches --json-config config/config.json
    ```
 
-This command should run __after__ the `start` command.  
-It sends a `get_switches` command to every worker machine in parallel and
-queries the number of bootes switches.
-If the operation runs on a successfully booted topology you should
-synchronously get a `200 OK` response code and the number of switches should
-be logged.  
+If the distributed topologies have been successfully booted, you should
+get a `200 OK` message and the number of switches booted.  
 
 
 ##### Do a pingall operation
 
-Run the following command inside the end user machine  
-
-   ```bash
-   [user@machine multinet/]$ bin/handlers/pingall --json-config <path-to-config-file>
-   ```
-
-For example:
+To perform a "pingall" operation on every worker node in parallel run the following
+command from the client machine:
 
    ```bash
    [user@machine multinet/]$ bin/handlers/pingall --json-config config/config.json
    ```
 
-This command should run __after__ the `start` command.  
-It sends a `pingall` command to every worker machine in parallel and performs
-a pingall operation.
 If the operation runs on a successfully booted topology you should
 synchronously get a `200 OK` response code and the pingall output should
-be logged.  
-_Note_ that a `pingall` operation may take a long time to complete if the
+be logged.  _Note_ that a `pingall` operation may take a long time to complete if the
 topology has many hosts.  
 
 
-#### Stop Multinet topologies  
+##### Trigger host visibility
 
-Run the following command inside the end user machine:  
+When connecting a Multinet topology to the OpenDaylight controller, 
+the hosts are not made automatically visible by the L2 switch plugin, 
+but rather when they generate traffic.  
+To trigger host visibility, we have opted to perform a dummy ping from each
+host to the controller, which fires a `PACKET_IN` transmission. 
+
+To do this, run the following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/stop_topos --json-config <path-to-config-file>
+   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config config/config.json
    ```
 
-For example:
+If all the topologies are booted successfully you should synchronously
+get a `200 OK` response code.  _Note_ that a `detect_hosts` operation may take a long 
+time to complete if the topology has many hosts.
+
+
+
+#### Stop Multinet topology
+
+To stop a Multinet topology run the following command from the client machine:
 
    ```bash
    [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
    ```
 
-This command should run __after__ the `start` command.  
-It sends a `stop` command to every worker machine in parallel and destroys the
-topologies.
-If all the topologies are destroyed successfully you should synchronously
-get a `200 OK` response code.  
+The above will send a `stop` command to every worker node in parallel and destroy the
+topologies. If all the topologies are destroyed successfully, you should synchronously
+get a `200 OK` output message.  
 
 
 #### Clean machines from Multinet installation
 
-A dedicated script exist to revert the Multinet deployment. To clean the VMs of Multinet simply run:  
+A dedicated script exist to revert the Multinet deployment. To clean all the Multinet 
+machines simply run:  
 
 ```bash
 [user@machine multinet/]$ bin/cleanup --json-config config.json
@@ -428,7 +391,7 @@ relieve the end user from having to manage each topology separately, we have
 adopted a _master-worker model_ for centralized control.
 
 The __master__ process acts as the Multinet front-end that accepts REST requests
-from the end user. At the same time, it orchestrates the pool of workers.
+from the client machine. At the same time, it orchestrates the pool of workers.
 On a user request, the master creates a separate command for each local topology
 which it dispatches simultaneously to the workers.
 Each __worker__ process controls a local Mininet topology. It accepts commands
@@ -441,6 +404,8 @@ and reply to the user as soon as it has a complete global view.
 For resource efficiency and speed, it is preferable to create each worker along
 with its topology on a separate machine.
 
+
+
 ## Code Design
 
 #### Code structure
@@ -449,9 +414,9 @@ with its topology on a separate machine.
 |--------------------------------------------------|-------------------------------------------------|
 | `bin/`              | Binaries |
 | `bin/handlers/`     | Command Line Handlers |
-| `bin/cleanup.sh`    | cleanup script to reset the virtual machines environment |
-| `bin/deploy.py`     | Automation script to copy and start the master and the workers in the virtual machines |
-| `config/`           | configuration file for the handlers, the deployment and the master |
+| `bin/cleanuph`    | Cleanup script to reset the Multinet machines environment |
+| `bin/deploy`     | Automation script to copy and start the master and the workers in the Multinet machines |
+| `config/`           | Configuration file for the handlers, the deployment and the master |
 | `figs/`             | Figures needed for documentation |
 | `multi/`            | Module containing the Master / Worker REST servers |
 | `net/`              | Module containing the Mininet related functionality |
@@ -463,19 +428,20 @@ with its topology on a separate machine.
 
 #### Interacting with the master programmatically
 
-To make the communication between the user, the master and the workers easier
-we designed the master (and the workers) as a REST server.
-The command line handlers are essentially wrapper scripts that perform POST requests to the REST API the master exposes.  
+##### Via REST 
 
-Bellow we present a roadmap of the master API  
+To make easier the communication between a client application and the master node, we augmented it
+with a REST server and API. The client application can issue the POST requests shown below to interact with 
+Multinet programmatically. In essence, the command line handlers presented in the previous sections are 
+wrapper scripts to those POST requests. 
 
-- Initialize the topologies  
+- Initialize Multinet topology 
   ```python
   @bottle.route('/init', method='POST')
   ```
   When making a POST request to the `init` endpoint, you must also send a JSON
   body with the following format (also see the 
-  [Initialize Multinet topologies](#initialize-multinet-topologies) section)  
+  [Initialize Multinet topology](#initialize-multinet-topology) section)  
   ```json
   {
         "controller_ip_address":"10.1.1.39",
@@ -489,12 +455,22 @@ Bellow we present a roadmap of the master API
   }
   ```
 
-- Boot the topologies  
+- Start Multinet topology  
   ```python
   @bottle.route('/start', method='POST')
   ```
 
-- Make the hosts visible to the controller  
+- Get the number of switches
+  ```python
+  @bottle.route('/get_switches', method='POST')
+  ```
+
+- Perform a `pingall` in each topology  
+  ```python
+  @bottle.route('/ping_all', method='POST')
+  ```
+
+- Make the hosts visible
   ```python
   @bottle.route('/detect_hosts', method='POST')
   ```
@@ -504,21 +480,13 @@ Bellow we present a roadmap of the master API
   @bottle.route('/stop', method='POST')
   ```
 
-- Perform a `pingall` in each topology  
-  ```python
-  @bottle.route('/ping_all', method='POST')
-  ```
 
-- Get the number of switches in each topology  
-  ```python
-  @bottle.route('/get_switches', method='POST')
-  ```
+##### Via Python 
 
-You can also utilize the wrappers from the `multinet_requests` module
+You can also utilize the wrappers from the `multinet_requests` module for the 
+same purpose. Example:  
 
-Example:  
-
-1. For `init`
+1. For initialization 
    ```python
    # Send a POST request to the master 'init' endpoint
 
