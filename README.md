@@ -10,7 +10,7 @@ project to emulate SDN networks via multiple isolated topologies, each launched 
 a separate machine, and all connected to the same controller.
 
 Multinet has been verified with the Lithium release of the OpenDaylight controller,
-where we managed to successfully boot a distributed topology of 3000 OVS switches.
+where we managed to successfully boot a distributed topology of 3000 OVS switches.  
 
 
 _Why isolated topologies?_
@@ -77,6 +77,11 @@ If you already have a custom environment set up, jump to
 
 
 #### Environment setup using Vagrant
+
+You could also use `vagrant` to setup a testing environment quickly. 
+Using the provided `Vagrantfile` you can boot a configurable number of 
+fully provisioned VMs in a private network and specify their IP scheme.  
+If you already have a testing environment you can skip this step.  
 
 Under the `vagrant` directory we provide scripts and Vagrantfiles to
 automatically setup a distributed environment of VMs to run Multinet. The steps
@@ -147,16 +152,17 @@ for this are:
      [user@machine multinet/vagrant/packaged_multi]$ vagrant up
      ```
 
+You should now have a number of interconnected VMs with all the dependencies installed.  
+
 #### Deploy Multinet on the distributed environment
 
-To deploy Multinet the user has to:
- 1. Clone the Multinet repository in a folder inside his system
- 2. Configure `config/config.json`
- 3. Run `bin/deploy.py`  
+The next phase is the deployment phase. We need to copy the `Multinet` files 
+in each VM and start the `master` and the `workers`.  
+We provide a `deploy` script that automates this process. To use it follow the 
+following instructions
 
-1. Configure the master / worker IP addresses and ports and the `deploy`
-   options inside the `config/config.json`:
-
+1. Clone the Multinet repository in the local machine  
+2. Configure `config/config.json` with the IP scheme of your VMs:  
    ```json
    {
       "master_ip" : "10.1.1.80",
@@ -172,7 +178,6 @@ To deploy Multinet the user has to:
       }
    }
    ```
-
    - `multinet_base_dir` is the location that the repository was cloned in the master node.
    - `master_ip` is the IP address of the machine where the master will run
    - `master_port` is the port where the master listens for REST requests
@@ -183,21 +188,12 @@ To deploy Multinet the user has to:
       will be created to launch topologies
    - `ssh_port` is the port where machines listen for SSH connections
    - `username`, `password` are the credentials used to access via SSH the machines
-
-2. Run the `deploy.py` script in the external user console to copy the
+3. Run the `deploy` script in the external user console to copy the
    necessary files and start the master and the workers:
 
    ```bash
    [user@machine multinet/]$ bin/deploy --json-config config.json
    ```
-
-#### Clean machines from Multinet installation
-
-A dedicated script exist to revert the Multinet deployment. To clean the VMs of Multinet simply run: 
-
-```bash
-[user@machine multinet/]$ bin/cleanup --json-config config.json
-```
 
 #### Initialize Multinet topologies
 
@@ -379,6 +375,15 @@ It sends a `stop` command to every worker machine in parallel and destroys the
 topologies.
 If all the topologies are destroyed successfully you should synchronously
 get a `200 OK` response code.  
+
+
+#### Clean machines from Multinet installation
+
+A dedicated script exist to revert the Multinet deployment. To clean the VMs of Multinet simply run:  
+
+```bash
+[user@machine multinet/]$ bin/cleanup --json-config config.json
+```
 
 
 ## System Architecture
