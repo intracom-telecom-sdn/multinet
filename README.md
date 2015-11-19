@@ -165,7 +165,7 @@ denoted in the following examples with the `[user@multinet]` prompt.
 
 Once you have the repository checked out, you may proceed with some configuration. 
 
-__Deployment configuration__ 
+_Deployment configuration_
 
 Edit the configuration file to your IP sceme: 
 
@@ -201,7 +201,7 @@ Edit the configuration file to your IP sceme:
 - `username`, `password` are the credentials used to access via SSH the master and 
   worker machines
 
-__Topology configuration__
+_Topology configuration_
 
 Edit the configuration file to the desired topology features: 
 
@@ -250,7 +250,11 @@ necessary files and start the master and the workers:
    [user@machine multinet/]$ bin/deploy --json-config config/config.json
    ```
 
-#### Boot Multinet topologies
+#### Initialize Multinet topology
+
+This step initializes the distributed topologies _without connecting them to 
+the controller_. It creates every necessary component of the topology, such 
+as switches, links, hosts, etc. 
 
 Run the following command from the cline machine: 
 
@@ -258,46 +262,44 @@ Run the following command from the cline machine:
    [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
    ```
 
-  The above will send an `init` command to every worker node concurrently,
-  and an identical Mininet topology will be booted on every worker machine.
-  If all topologies are booted successfully you should get a `200 OK` response 
-  code.  
+The above will send an `init` command to every worker node concurrently,
+and an identical Mininet topology will be booted on every worker machine.
+If _all_ topologies are initialized successfully you should get a `200 OK` 
+output message on the client machine. If any topology fails to initialize 
+successfully, an error message will be printed.
 
-__Gradual Bootup__
 
-We observed that most SDN controllers display some
-instability issues when it is overwhelmed with switch additions.  
-The solution we pose to this problem is the gradual switch bootup.  
-In more detail, we modified the Mininet `start` method as follows
-- We split the switches we need to start in groups
-- The size of each group is specified by the `group_size` parameter
-- We start the switches in each group normally  
-- After all the switches in a group have started we insert a delay  
-- The delay is specified by the `group_delay` parameter  
+#### Start Multinet topology
 
-We have observed that this method allows us to boot larger topologies with
-greater stability. Moreover it gives us a way to estimate the boot time of
-a topology in a deterministic way.
+In this step the initialized topologies are being connected to the SDN controller. 
+Multinet provides control over the way that the topologies are being 
+connected to the controller, allowing gradual connection in a group-wise 
+fashion. The rationale behind this is to prevent the controller from being 
+overwhelmed at cases where a large number of switches are being exposed to it at once.
+As a result, the gradual start up enables investigating different policies of
+connecting large-scale topologies to the controller.
 
-#### Start Multinet topologies
+The `group_size` and `group_delay` configuration options control the way that the 
+distributed topologies are being connected to the controller. The connection 
+process proceeds in intervals as follows: at every step, `group_size`
+switches from _every_ worker node will be connected to the controller, and 
+after that, a delay of `group_delay` milliseconds will follow before 
+proceeding to the next interval. Note that each worker node will execute the 
+gradual booting process independent from the others, without employing any
+kind of intermediate synchronization. 
 
-Run the following command inside the end user machine  
-
-   ```bash
-   [user@machine multinet/]$ bin/handlers/start_topos --json-config <path-to-config-file>
-   ```
-
-For example:
+To connect a Multinet topology after it has been initialized, run the following 
+command: 
 
    ```bash
    [user@machine multinet/]$ bin/handlers/start_topos --json-config config/config.json
    ```
 
-This command should run __after__ the `init` command.  
-It sends a `start` command to every worker machine in parallel and boots the
-topologies.
-If all the topologies are booted successfully you should synchronously
-get a `200 OK` response code.  
+The above will send a `start` command to every worker node in parallel and 
+initiate the gradual connections of the topologies. 
+If _all_ topologies are connected successfully you should get a `200 OK` 
+output message on the client machine. If any topology fails to connect,
+an error message will be printed.
 
 
 #### Interact with the topologies
