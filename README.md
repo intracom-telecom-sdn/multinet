@@ -10,7 +10,10 @@ project to emulate SDN networks via multiple isolated topologies, each launched 
 a separate machine, and all connected to the same controller.
 
 Multinet has been verified with the Lithium release of the OpenDaylight controller,
-where we managed to successfully boot a distributed topology of 3000 OVS switches.  
+where we managed to boot and connect a topology of 3000+ OVS OF 1.3 switches to a 
+single controller instance in less than 10 minutes. The controller was running on a 
+moderate-sized VM (8 VCPUs, 32GB memory) and the multinet topology over 10 small-sized
+VMs (1 VCPU, 4GB memory each).
 
 
 _Why isolated topologies?_
