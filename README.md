@@ -534,9 +534,8 @@ same purpose. Example:
 
 #### Adding your own topologies
 
-First of all **note** that the build method signature of any existing topology
-created with the high level Mininet API need to be modified to conform with
-the following method signature in order to be compatible
+To be able to plug any topology created with the high level Mininet API to Multinet, 
+modify the build method to conform with the following method signature:
 ```python
 # k is the number of switches
 # n is the number of hosts per switch
