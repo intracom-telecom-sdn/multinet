@@ -76,7 +76,7 @@ as follows:
 In the next section we demonstrate how to prepare such an environment using
 [Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs.
 If you already have a custom environment set up, jump to
-[deployment](#deploy-multinet-on-the-distributed-environment) section.
+[configuration](#configuration) section.
 
 
 #### Environment setup using Vagrant
@@ -130,7 +130,7 @@ for this are:
    mh_vm_private_network_ip_mini = '10.1.1.70'  # the first IP Address in the mininet VMs IP Address range
    ```
 
-   _Optional Configuration_
+   _Optional Configuration_   
    If you need port forwarding from the master guest machine to the
    host machine, edit these variables inside the `Vagrantfile`:  
 
@@ -156,93 +156,114 @@ for this are:
 
 You should now have a number of interconnected VMs with all the dependencies installed.  
 
-#### Deploy Multinet on the distributed environment
+
+#### Configuration 
+
+To start using Multinet, the first step is to clone the Multinet repository on your 
+local machine. This machine is supposed to act as the __client machine__ to Multinet, and is 
+denoted in the following examples with the `[user@multinet]` prompt.
+
+Once you have the repository checked out, you may proceed with some configuration. 
+
+__Deployment configuration__ 
+
+Edit the configuration file to your IP sceme: 
+
+  ```bash
+  [user@machine multinet/]$ vim config/config.json
+  ```
+
+  ```json
+  {
+    "master_ip" : "10.1.1.80",
+    "master_port": 3300,
+    "worker_ip_list": ["10.1.1.80", "10.1.1.81"],
+    "worker_port": 3333,
+  
+    "deploy": {
+      "multinet_base_dir": "/home/vagrant/multinet",
+      "ssh_port": 22,
+      "username": "vagrant",
+      "password": "vagrant"
+    }
+  }
+  ```
+- `master_ip` is the IP address of the machine where the master will run
+- `master_port` is the port where the master listens for REST requests
+  from the user or any external client application
+- `worker_ip_list` is the list with the IPs of all machines where workers
+  will be created to launch topologies
+- `worker_port` is the port where each worker listens for REST requests
+  from the master
+- `multinet_base_dir` is the location where the Multinet repo was cloned on the 
+  client machine
+- `ssh_port` is the port where the master and worker machines listen for SSH connections
+- `username`, `password` are the credentials used to access via SSH the master and 
+  worker machines
+
+__Topology configuration__
+
+Edit the configuration file to the desired topology features: 
+
+  ```json
+  {
+    "topo": {
+      "controller_ip_address":"10.1.1.39",
+      "controller_of_port":6653,
+      "switch_type":"ovsk",
+      "topo_type":"linear",
+      "topo_size":30,
+      "group_size":3,
+      "group_delay":100,
+      "hosts_per_switch":2
+    }
+  }
+  ```
+
+- `controller_ip_address` is the IP address of the machine where the
+   SDN controller will run
+- `controller_of_port` is the port where the controller listens for
+   OpenFlow messages
+- `switch_type` is the type of soft switch used for the emulation 
+   (supported types: `ovsk` for OVS OF1.3 switches, `user` for CPqD OF1.3 switches)
+- `topo_type` is the type of topologies to be booted on every worker 
+   node (supported types: `linear`, `mesh`, `ring`, `disconnected`)
+- `topo_size` is the size of topologies to be booted on every worker node
+- `group_size`, `group_delay` are the parameters defining the gradual
+   bootup groups (see section below)
+- `hosts_per_switch` is the number of hosts connected to each switch of 
+   the topology
+
+
+
+#### Deployment
 
 The goal of this phase is to deploy the Multinet master and worker nodes on a set of 
-up and running physical or virtual machines satisfying the conditions mentioned above. 
+up and running physical or virtual machines that satisfy the conditions mentioned above. 
 The provided `deploy` script automates the process of copying the required files on 
 each machine and starting the `master` and `worker` REST servers. 
 
-1. Clone the Multinet repository on your local machine (acts as a front-end to the 
-   Multinet nodes)
-2. Configure `config/config.json` with the IP scheme of your machines:  
-   ```json
-   {
-      "master_ip" : "10.1.1.80",
-      "master_port": 3300,
-      "worker_ip_list": ["10.1.1.80", "10.1.1.81"],
-      "worker_port": 3333,
-
-      "deploy": {
-        "multinet_base_dir": "/home/vagrant/multinet",
-        "ssh_port": 22,
-        "username": "vagrant",
-        "password": "vagrant"
-      }
-   }
-   ```
-   - `multinet_base_dir` is the location that the repository was cloned in the master node.
-   - `master_ip` is the IP address of the machine where the master will run
-   - `master_port` is the port where the master listens for REST requests
-     from external client applications
-   - `worker_port` is the port where each worker listens for REST requests
-      from the master
-   - `worker_ip_list` is the list with the IPs of all machines where workers
-      will be created to launch topologies
-   - `ssh_port` is the port where machines listen for SSH connections
-   - `username`, `password` are the credentials used to access via SSH the machines
-3. Run the `deploy` script in the external user console to copy the
-   necessary files and start the master and the workers:
+Run the `deploy` script from the client machine to copy the
+necessary files and start the master and the workers:
 
    ```bash
-   [user@machine multinet/]$ bin/deploy --json-config config.json
+   [user@machine multinet/]$ bin/deploy --json-config config/config.json
    ```
 
-#### Initialize Multinet topologies
+#### Boot Multinet topologies
 
-1. Make sure the master / worker IP addresses and ports in the
-   `config/config.json` file are properly configured. Then configure
-   the `topo` options:
-
-   ```json
-   {
-      "topo": {
-        "controller_ip_address":"10.1.1.39",
-        "controller_of_port":6653,
-        "switch_type":"ovsk",
-        "topo_type":"linear",
-        "topo_size":30,
-        "group_size":3,
-        "group_delay":100,
-        "hosts_per_switch":2
-      }
-   }
-   ```
-
-   Where
-   - `controller_ip_address` is the IP address of the machine where the
-     controller will run
-   - `controller_of_port` is the port where the controller listens for
-     OpenFlow traffic
-   - `switch_type` is the type of soft switch used for the emulation
-   - `topo_type` is the type of topology to be booted
-   - `topo_size` is the size of topology to be booted
-   - `group_size`, `group_delay` are the parameters defining the gradual
-     bootup groups
-   - `hosts_per_switch` is the number of hosts connected to each switch
-
-2. Run the following command inside the end user machine  
+Run the following command from the cline machine: 
 
    ```bash
    [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
    ```
 
-  This command sends an `init` command to every worker machine in parallel,
-  and an identical Mininet topology will be built in each machine.  
-  If all the topologies are built successfully you should synchronously
-  get a `200 OK` response code.  
+  The above will send an `init` command to every worker node concurrently,
+  and an identical Mininet topology will be booted on every worker machine.
+  If all topologies are booted successfully you should get a `200 OK` response 
+  code.  
 
-_Gradual Bootup_
+__Gradual Bootup__
 
 We observed that most SDN controllers display some
 instability issues when it is overwhelmed with switch additions.  
