@@ -412,6 +412,7 @@ with its topology on a separate machine.
 
 | Path                                             | Description                                     |
 |--------------------------------------------------|-------------------------------------------------|
+| `.travis.yml`       | Travis CI job |
 | `bin/`              | Binaries |
 | `bin/handlers/`     | Command Line Handlers |
 | `bin/cleanuph`    | Cleanup script to reset the Multinet machines environment |
@@ -422,6 +423,8 @@ with its topology on a separate machine.
 | `net/`              | Module containing the Mininet related functionality |
 | `net/multinet.py`   | Class inheriting from the core `Mininet` with added / modified functionality |
 | `net/topologies.py` | example topologies |  
+| `test`              | basic functionality tests |  
+| `travis-jobs`       | Travis CI machine provisioning helper scripts |
 | `util/`             | Utility modules |
 | `vagrant/`          | Vagrantfiles for fast provisioning of a running environment |
 
