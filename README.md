@@ -571,7 +571,7 @@ def build(self, k=2, n=1, dpid=1, **_opts):
                    self.addLink(host, switch)
  ```
 
-2. Add it to the `Multinet.TOPOS` dictionary
+2. Add the new topology to the `Multinet.TOPOS` dictionary
 
    ```python
    # worker.py
