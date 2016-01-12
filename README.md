@@ -1,6 +1,6 @@
 [![Code Climate](https://codeclimate.com/github/intracom-telecom-sdn/multinet/badges/gpa.svg)](https://codeclimate.com/github/intracom-telecom-sdn/multinet)
 [![Code Health](https://landscape.io/github/intracom-telecom-sdn/multinet/master/landscape.svg?style=flat)](https://landscape.io/github/intracom-telecom-sdn/multinet/master)
-[![Build Status](https://travis-ci.org/intracom-telecom-sdn/multinet.svg?branch=squash_commits)](https://travis-ci.org/intracom-telecom-sdn/multinet.svg?branch=master)
+[![Build Status](https://travis-ci.org/intracom-telecom-sdn/multinet.svg?branch=squash_commits)](https://travis-ci.org/intracom-telecom-sdn/multinet.svg?branch=squash_commits)](https://travis-ci.org/intracom-telecom-sdn/multinet)
 
 # Multinet
 
