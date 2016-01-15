@@ -23,6 +23,7 @@ def kill_remote_server(session, server_port):
     _, cmd_out, _ = util.netutil.ssh_run_command(session, get_pid)
     pid = str(cmd_out.read().decode()).strip().strip('-')
     util.netutil.ssh_run_command(session, 'sudo kill -9 {0}'.format(pid))
+    util.netutil.ssh_run_command(session, 'sudo mn -c')
 
 
 if __name__ == '__main__':
