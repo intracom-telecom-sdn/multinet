@@ -145,6 +145,20 @@ def rest_start():
 
     bottle.run(host=master_ip, port=master_port, debug=True)
 
+@bottle.route('/generate_traffic', method='POST')
+def generate_traffic():
+    """
+    Broadcast the POST request to the 'generate_traffic' endpoint of the workers
+    Aggregate the responses
+
+    Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
+    """
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'generate_traffic')
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
+    return bottle.HTTPResponse(status=stat, body=bod)
+
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)

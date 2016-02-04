@@ -34,7 +34,7 @@ class Multinet(mininet.net.Mininet):
 
     """
     name - class correspondence for the topologies
-    """ 
+    """
     TOPOS = {
         'disconnected': net.topologies.DisconnectedTopo,
         'linear': net.topologies.LinearTopo,
@@ -52,7 +52,9 @@ class Multinet(mininet.net.Mininet):
 
     def __init__(self, controller_ip, controller_port, switch_type, topo_type,
                  num_switches, group_size, group_delay_ms, hosts_per_switch,
-                 dpid_offset, auto_detect_hosts=False):
+                 dpid_offset, delay_before_traffic_generation_ms,
+                 time_span_traffic_generation_ms, traffic_transmission_delay_ms,
+                 auto_detect_hosts=False):
         """
         Call the super constructor and initialize any extra properties we want to user
 
@@ -66,6 +68,9 @@ class Multinet(mininet.net.Mininet):
             group_delay_ms (int): The delay between the bootup of each group
             hosts_per_switch (int): The number of hosts connected to each switch
             dpid_offset (int): The dpid offset of this worker
+            delay_before_traffic_generation_ms,
+            time_span_traffic_generation_ms
+            traffic_transmission_delay_ms
             auto_detect_hosts (bool): Enable or disable automatic host detection
         """
         self._topo_type = topo_type
@@ -78,6 +83,9 @@ class Multinet(mininet.net.Mininet):
         self._controller_ip = controller_ip
         self._controller_port = controller_port
         self.booted_switches = 0
+        self._delay_before_traffic_generation_ms = delay_before_traffic_generation_ms
+        self._time_span_traffic_generation_ms = time_span_traffic_generation_ms
+        self._traffic_transmission_delay_ms = traffic_transmission_delay_ms
 
         super(
             Multinet,
@@ -230,7 +238,7 @@ class Multinet(mininet.net.Mininet):
             # ping the void
             host.sendCmd('ping -c{0} {1}'.format(str(ping_cnt),
                                                  str(self.controllers[0].IP())))
-            
+
         logging.debug('[mininet] Hosts should be visible now')
 
     def get_switches(self):
@@ -263,3 +271,11 @@ class Multinet(mininet.net.Mininet):
         All-to-all host pinging used for testing.
         """
         self.pingAll(timeout=None)
+
+    def generate_traffic(self):
+        """
+        Traffic generation from switches to controller
+        """
+        logging.info('[mininet] Generating traffic from switches.')
+
+        pass

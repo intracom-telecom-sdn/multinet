@@ -1,24 +1,26 @@
 {
-	"master_ip" : "10.1.38.50",
-	"master_port": 3300,
-	"worker_ip_list": ["10.1.38.50", "10.1.38.51", "10.1.38.52", "10.1.38.53", "10.1.38.54", "10.1.38.55", "10.1.38.56", "10.1.38.57", "10.1.38.58", "10.1.38.59",
+  "master_ip" : "10.1.38.50",
+  "master_port": 3300,
+  "worker_ip_list": ["10.1.38.50", "10.1.38.51", "10.1.38.52", "10.1.38.53", "10.1.38.54", "10.1.38.55", "10.1.38.56", "10.1.38.57", "10.1.38.58", "10.1.38.59",
                            "10.1.38.60", "10.1.38.61", "10.1.38.62", "10.1.38.63", "10.1.38.64", "10.1.38.65", "10.1.38.66", "10.1.38.67", "10.1.38.68", "10.1.38.69"],
-	"worker_port_list": [3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333],
+  "worker_port_list": [3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333, 3333],
         "deploy": {
-		"multinet_base_dir": "/home/vagrant/multinet",
-		"ssh_port": 22,
-		"username": "vagrant",
-		"password": "vagrant"
-	},
-
-	"topo": {
-		"controller_ip_address":"10.1.38.45",
-		"controller_of_port":6653,
-		"switch_type":"ovsk",
-		"topo_type":"linear",
-		"topo_size":450,
-		"group_size":1,
-		"group_delay":10000,
-		"hosts_per_switch":0
-	}
+    "multinet_base_dir": "/home/vagrant/multinet",
+    "ssh_port": 22,
+    "username": "vagrant",
+    "password": "vagrant"
+  },
+  "topo": {
+    "controller_ip_address":"10.1.38.45",
+    "controller_of_port":6653,
+    "switch_type":"ovsk",
+    "topo_type":"linear",
+    "topo_size":450,
+    "group_size":1,
+    "group_delay":10000,
+    "hosts_per_switch":0,
+    "delay_before_traffic_generation_ms":0,
+    "time_span_traffic_generation_ms":2000,
+    "traffic_transmission_delay_ms":2000
+  }
 }
