@@ -58,9 +58,8 @@ def init():
         int(topo_conf['group_delay']),
         int(topo_conf['hosts_per_switch']),
         int(topo_conf['dpid_offset']),
-        topo_conf['delay_before_traffic_generation_ms'],
-        topo_conf['time_span_traffic_generation_ms'],
-        topo_conf['traffic_transmission_delay_ms']
+        topo_conf['traffic_generation_duration_ms'],
+        topo_conf['interpacket_delay_ms']
         )
     MININET_TOPO.init_topology()
 

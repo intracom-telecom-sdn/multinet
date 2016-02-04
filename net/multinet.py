@@ -11,7 +11,6 @@ by creating distributed Mininet topologies
 
 import logging
 import time
-
 import mininet
 import mininet.util
 import mininet.net
@@ -52,9 +51,8 @@ class Multinet(mininet.net.Mininet):
 
     def __init__(self, controller_ip, controller_port, switch_type, topo_type,
                  num_switches, group_size, group_delay_ms, hosts_per_switch,
-                 dpid_offset, delay_before_traffic_generation_ms,
-                 time_span_traffic_generation_ms, traffic_transmission_delay_ms,
-                 auto_detect_hosts=False):
+                 dpid_offset, traffic_generation_duration_ms,
+                 interpacket_delay_ms, auto_detect_hosts=False):
         """
         Call the super constructor and initialize any extra properties we want to user
 
@@ -68,9 +66,11 @@ class Multinet(mininet.net.Mininet):
             group_delay_ms (int): The delay between the bootup of each group
             hosts_per_switch (int): The number of hosts connected to each switch
             dpid_offset (int): The dpid offset of this worker
-            delay_before_traffic_generation_ms,
-            time_span_traffic_generation_ms
-            traffic_transmission_delay_ms
+            traffic_generation_duration_ms (int): The interval of time, during
+                                                  which transmission of
+                                                  Packet_IN's occures
+            interpacket_delay_ms (int): The interval of time between 2
+                                        Packet_IN transmissions
             auto_detect_hosts (bool): Enable or disable automatic host detection
         """
         self._topo_type = topo_type
@@ -83,9 +83,8 @@ class Multinet(mininet.net.Mininet):
         self._controller_ip = controller_ip
         self._controller_port = controller_port
         self.booted_switches = 0
-        self._delay_before_traffic_generation_ms = delay_before_traffic_generation_ms
-        self._time_span_traffic_generation_ms = time_span_traffic_generation_ms
-        self._traffic_transmission_delay_ms = traffic_transmission_delay_ms
+        self._traffic_generation_duration_ms = traffic_generation_duration_ms
+        self._interpacket_delay_ms = interpacket_delay_ms
 
         super(
             Multinet,
@@ -184,6 +183,7 @@ class Multinet(mininet.net.Mininet):
         logging.info('[mininet] Topology initialized successfully. '
                      'Booted up {0} switches'.format(self._num_switches))
 
+
     def start_topology(self):
         """
         Start controller and switches.
@@ -226,6 +226,7 @@ class Multinet(mininet.net.Mininet):
         if self.auto_detect_hosts:
             self.detect_hosts(ping_cnt=50)
 
+
     def detect_hosts(self, ping_cnt=50):
         """
         Do a ping from each host to the void to send a PACKET_IN to the controller
@@ -266,16 +267,87 @@ class Multinet(mininet.net.Mininet):
         self.booted_switches = 0
         logging.info('[mininet] Topology halted successfully')
 
+
     def ping_all(self):
         """
         All-to-all host pinging used for testing.
         """
         self.pingAll(timeout=None)
 
+    def generate_mac_address_pairs(self, current_mac):
+        """
+        Generated tuple of source/destination mac addressess
+
+        Args:
+          current_mac (str): The last generated mac used for traffic
+                             generation. It is used as reference to generate
+                             the next pair of source and destination mac
+                             addresses.
+        """
+
+        # We place an extra 11 in front of base_mac and these digits are
+        # filtered out, in order to get a full range of mac addresses. We get
+        # generated mac addresses as string separated with : for every 2
+        # characters.
+        base_mac = 0x11000000000000
+        generated_mac = hex(base_mac + int(current_mac, 16))
+
+        source_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 1))]*2))[6:]
+        dest_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 2))]*2))[6:]
+
+        return source_mac, dest_mac
+
     def generate_traffic(self):
         """
         Traffic generation from switches to controller
         """
+
         logging.info('[mininet] Generating traffic from switches.')
 
-        pass
+        if not self._hosts_per_switch>1:
+            raise AssertionError(
+                '_hosts_per_switch must be at least 2 or greater.')
+        traffic_transmission_delay = self._interpacket_delay_ms / 1000
+        traffic_transmission_interval = \
+            self._traffic_generation_duration_ms / 1000
+        host_index = 0
+
+        transmission_start = time.time()
+        last_mac = hex(int(hex(self._dpid_offset) + '00000000', 16) + 0xffffffff)
+        current_mac = hex(int(last_mac, 16) - 0x0000ffffffff + 0x000000000001)
+
+
+        while (time.time() - transmission_start) <= traffic_transmission_interval:
+            src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
+
+            current_mac = hex(int(current_mac, 16) + 2)
+            self.hosts[host_index].sendCmd('sudo mz -a {0} -b {1} -t arp'.
+                                           format(src_mac, dst_mac))
+            self.hosts[host_index + 1].sendCmd('sudo mz -a {0} -b {1} -t arp'.
+                                               format(dst_mac, src_mac))
+            time.sleep(traffic_transmission_delay)
+            host_index += self._hosts_per_switch
+
+            if host_index >= len(self.hosts):
+                for host in self.hosts:
+                    host.waitOutput()
+                host_index = 0
+
+            if int(current_mac, 16) >= int(last_mac, 16):
+                current_mac = \
+                    hex(int(last_mac, 16) - 0x0000ffffffff + 0x000000000001)
+                # The minimum controller hard_timeout is 1 second.
+                # Retransmission using the init_mac must start after the
+                # minimum hard_timeout interval
+                if (time.time - transmission_start) < 1:
+                    time.sleep(1 - (time.time - transmission_start))
+        # Cleanup hosts console outputs and write flags after finishing
+        # transmission
+        for host in self.hosts:
+            host.waitOutput()
+
+
+
+
+
+
