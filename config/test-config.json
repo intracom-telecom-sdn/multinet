@@ -19,6 +19,8 @@
 		"topo_size":10,
 		"group_size":10,
 		"group_delay":100,
-		"hosts_per_switch":2
+		"hosts_per_switch":2,
+		"traffic_generation_duration_ms":60000,
+		"interpacket_delay_ms":5000
 	}
 }

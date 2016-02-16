@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+"""Generate traffic from the topologies
+Command line handler to generate traffic from topology switches
+"""
+
+import util.multinet_requests as m_util
+
+
+def traffic_gen_handler_main():
+    """Main
+    Send a POST request to the master 'traffic_gen_handler_main' endpoint,
+    validate the response code and print the responses
+
+    Usage:
+      bin/handler/traffic_gen --json-config <path-to-json-conf>
+
+    Example:
+      bin/handler/traffic_gen --json-config config/runtime_config.json
+
+    Command Line Arguments:
+      json-config (str): Path to the JSON configuration file to be used
+    """
+    conf, _ = m_util.parse_json_conf()
+
+    res = m_util.master_cmd(conf['master_ip'],
+                            conf['master_port'],
+                            'generate_traffic')
+
+    m_util.handle_post_request(res, exit_on_fail=True)
+
+if __name__ == '__main__':
+    traffic_gen_handler_main()

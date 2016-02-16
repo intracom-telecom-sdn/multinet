@@ -47,11 +47,11 @@ def dpid_offset_range(num_vms):
 
     Args:
       num_vms (int): The number of virtual machines
-
+      topo_size (int): The number of topology switches
     Returns:
       list: The dpid offset range
     """
-    return [1000 * i + 1 for i in xrange(0, num_vms)]
+    return [i for i in xrange(0, num_vms)]
 
 
 def make_post_request(host_ip, host_port, route, data=None):
@@ -129,6 +129,7 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
       worker_ip_list (list): A list of IP addresses to broadcast the POST request
       worker_port (int): The port of the workers
       opcode (str): The REST API endpoint
+      topo_size (int): The number of topology switches
       data (dict): JSON data to go with the request
 
     Returns:
@@ -172,7 +173,7 @@ def aggregate_broadcast_response(responses):
 
     Returns:
       status (int): The aggregate status code
-      body (list): The list of all the responses text 
+      body (list): The list of all the responses text
     """
     status = 200 if all(
         r.status_code >= 200 and r.status_code < 300 for r in responses) else 500
@@ -187,7 +188,7 @@ def master_cmd(master_ip, master_port, opcode, data=None):
       master_ip (str): The IP address of the master
       master_port (int): The port of the master
       opcode (str): The REST API endpoint (the command we want to send)
- 
+
     Returns:
       requests.models.Response: The HTTP response for the performed request
     """

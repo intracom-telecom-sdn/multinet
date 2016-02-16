@@ -22,7 +22,6 @@ logging.basicConfig(level=logging.DEBUG)
 WORKER_PORT_LIST = []
 WORKER_IP_LIST = []
 
-
 @bottle.route('/init', method='POST')
 def init():
     """
@@ -48,7 +47,8 @@ def init():
 
     topo_conf = bottle.request.json
     logging.info(topo_conf)
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init', topo_conf)
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init',
+                                topo_conf)
 
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
@@ -79,7 +79,8 @@ def detect_hosts():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'detect_hosts')
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
+                                'detect_hosts')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -94,7 +95,8 @@ def get_switches():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'get_switches')
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
+                                'get_switches')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -144,6 +146,21 @@ def rest_start():
     WORKER_PORT_LIST = runtime_config['worker_port_list']
 
     bottle.run(host=master_ip, port=master_port, debug=True)
+
+@bottle.route('/generate_traffic', method='POST')
+def generate_traffic():
+    """
+    Broadcast the POST request to the 'generate_traffic' endpoint of the workers
+    Aggregate the responses
+
+    Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
+    """
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
+                                'generate_traffic')
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
+    return bottle.HTTPResponse(status=stat, body=bod)
 
 
 if __name__ == '__main__':

@@ -32,7 +32,7 @@ def init():
     Initializes a new topology object. The type of the new topology is
     defined by the topo parameter.
     Expects the topology configuration as JSON parameter.
-    
+
     JSON entries:
         controller_ip_address (str): The IP address of the controller
         controller_of_port (int): The OpenFlow port of the controller
@@ -57,7 +57,10 @@ def init():
         int(topo_conf['group_size']),
         int(topo_conf['group_delay']),
         int(topo_conf['hosts_per_switch']),
-        int(topo_conf['dpid_offset']))
+        int(topo_conf['dpid_offset']),
+        topo_conf['traffic_generation_duration_ms'],
+        topo_conf['interpacket_delay_ms']
+        )
     MININET_TOPO.init_topology()
 
 
@@ -110,6 +113,14 @@ def ping_all():
     """
     MININET_TOPO.ping_all()
 
+@bottle.route('/generate_traffic', method='POST')
+def generate_traffic():
+    """
+    Calls the generate_traffic() method of the current topology object to
+    generate traffic from the switches.
+    """
+
+    MININET_TOPO.generate_traffic()
 
 def rest_start():
     """Starts Mininet REST server"""
