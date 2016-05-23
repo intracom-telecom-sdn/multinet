@@ -297,6 +297,13 @@ class Multinet(mininet.net.Mininet):
 
         return source_mac, dest_mac
 
+    def get_flows(self):
+        """
+        Getting flows from switches
+        """
+        logging.info('[get_flows] Getting flows from switches.')
+
+
     def generate_traffic(self):
         """
         Traffic generation from switches to controller

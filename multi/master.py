@@ -100,6 +100,21 @@ def get_switches():
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
+@bottle.route('/get_flows', method='POST')
+def get_flows():
+    """
+    Broadcast the POST request to the 'get_flows' endpoint of the workers
+    Aggregate the responses
+
+    Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
+    """
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
+                                'get_flows')
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
+    return bottle.HTTPResponse(status=stat, body=bod)
+
 
 @bottle.route('/stop', method='POST')
 def stop():
