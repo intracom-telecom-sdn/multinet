@@ -302,7 +302,15 @@ class Multinet(mininet.net.Mininet):
         Getting flows from switches
         """
         logging.info('[get_flows] Getting flows from switches.')
+        flow_number_total = 0
+        for switch in self.switches:
+            logging.info(switch.dpctl('-O OpenFlow13 dump-flows'))
+            flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
+            flow_number = len(flows_list) - 2
+            flow_number_total += flow_number
 
+        logging.info('number of flows: {0}'.format(flow_number_total))
+        return flow_number_total
 
     def generate_traffic(self):
         """
