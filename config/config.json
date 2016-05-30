@@ -1,22 +1,22 @@
 {
-  "master_ip" : "192.168.100.21",
+  "master_ip" : "10.1.1.90",
   "master_port": 3300,
-  "worker_ip_list": ["192.168.100.21", "192.168.100.22", "192.168.100.23"],
-  "worker_port_list": [3333, 3333, 3333],
+  "worker_ip_list": ["10.1.1.90", "10.1.1.91"],
+  "worker_port_list": [3333, 3333],
         "deploy": {
-    "multinet_base_dir": "/home/konpap/SW/intracom/multinet/multinet_src/",
+    "multinet_base_dir": "/home/vagrant/multinet",
     "ssh_port": 22,
     "username": "vagrant",
     "password": "vagrant"
   },
   "topo": {
-    "controller_ip_address":"192.168.100.22",
+    "controller_ip_address":"10.1.38.45",
     "controller_of_port":6653,
     "switch_type":"ovsk",
     "topo_type":"linear",
-    "topo_size":10,
+    "topo_size":400,
     "group_size":1,
-    "group_delay":10,
+    "group_delay":100,
     "hosts_per_switch":2,
     "traffic_generation_duration_ms":60000,
     "interpacket_delay_ms":5000

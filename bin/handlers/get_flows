@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""Get the number of started switches
-Command line handler to get the number of started switches
-from the distributed topologies
+"""Get the number of flows for each worker of multinet
+Command line handler to get the number of flows from each worker of the multinet
+topology
 """
 
 import util.multinet_requests as m_util

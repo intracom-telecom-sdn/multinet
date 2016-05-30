@@ -104,7 +104,7 @@ def get_flows():
     Returns
         str: A JSON string with dpid_offset/number_of_switches key/value pairs
     """
-    dpid_key = 'dpid-{0}'.format(MININET_TOPO._dpid_offset)
+    dpid_key = 'number-of-flows-on-worker-{0}'.format(MININET_TOPO._dpid_offset)
     total_worker_flows = MININET_TOPO.get_flows()
     return json.dumps({dpid_key: total_worker_flows})
 
