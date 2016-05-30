@@ -70,6 +70,7 @@ as follows:
     - Python 2.7
     - `bottle`, `requests` and `paramiko` Python packages
     - a recent version of Mininet (we support 2.2.1rc)
+    - [Mausezahn](http://www.perihel.at/sec/mz/), tool for network traffic generation.
 - Connectivity:
     - the machines should be able to communicate with each other
     - the machines should have SSH connectivity
