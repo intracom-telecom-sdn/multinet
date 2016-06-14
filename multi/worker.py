@@ -95,6 +95,18 @@ def get_switches():
     num_sw = MININET_TOPO.get_switches()
     return json.dumps({dpid_key: num_sw})
 
+@bottle.route('/get_flows', method='POST')
+def get_flows():
+    """
+    Calls the get_flows() method of the current topology object to get the
+    current number of flows installed on the switches.
+
+    Returns
+        str: A JSON string with dpid_offset/number_of_switches key/value pairs
+    """
+    dpid_key = 'number-of-flows-on-worker-{0}'.format(MININET_TOPO._dpid_offset)
+    total_worker_flows = MININET_TOPO.get_flows()
+    return json.dumps({dpid_key: total_worker_flows})
 
 @bottle.route('/stop', method='POST')
 def stop():

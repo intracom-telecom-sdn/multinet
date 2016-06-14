@@ -274,6 +274,22 @@ class Multinet(mininet.net.Mininet):
         """
         self.pingAll(timeout=None)
 
+
+    def get_flows(self):
+        """
+        Getting flows from switches
+        """
+        logging.info('[get_flows] Getting flows from switches.')
+        flow_number_total = 0
+        for switch in self.switches:
+            flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
+            flow_number = len(flows_list) - 2
+            flow_number_total += flow_number
+
+        logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
+        return flow_number_total
+
+
     def generate_mac_address_pairs(self, current_mac):
         """
         Generated tuple of source/destination mac addressess
@@ -294,8 +310,8 @@ class Multinet(mininet.net.Mininet):
 
         source_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 1))]*2))[6:]
         dest_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 2))]*2))[6:]
-
         return source_mac, dest_mac
+
 
     def generate_traffic(self):
         """
@@ -315,7 +331,6 @@ class Multinet(mininet.net.Mininet):
         transmission_start = time.time()
         last_mac = hex(int(hex(self._dpid_offset) + '00000000', 16) + 0xffffffff)
         current_mac = hex(int(last_mac, 16) - 0x0000ffffffff + 0x000000000001)
-
 
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
@@ -345,9 +360,4 @@ class Multinet(mininet.net.Mininet):
         # transmission
         for host in self.hosts:
             host.waitOutput()
-
-
-
-
-
 

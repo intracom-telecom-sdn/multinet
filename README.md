@@ -70,6 +70,7 @@ as follows:
     - Python 2.7
     - `bottle`, `requests` and `paramiko` Python packages
     - a recent version of Mininet (we support 2.2.1rc)
+    - [Mausezahn](http://www.perihel.at/sec/mz/), tool for network traffic generation.
 - Connectivity:
     - the machines should be able to communicate with each other
     - the machines should have SSH connectivity
@@ -323,6 +324,21 @@ following command from the client machine:
 
 If the distributed topologies have been successfully booted, you should
 get a `200 OK` message and the number of switches booted on each worker node.
+
+
+##### Get the number of installed flows on switches of the topology
+
+To query Multinet for the number of all installed flows on topology switches on
+each worker, we can use the following command:
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/get_flows --json-config config/config.json
+   ```
+
+With this command on each switch we get a dump of its flows and we count them.
+For each worker we add the different counts of switches flows and we get the
+total installed flows for all the switches on the worker node. We return the
+per Multinet worker total installed flows.
 
 
 ##### Do a pingall operation
