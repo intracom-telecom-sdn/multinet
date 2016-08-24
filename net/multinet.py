@@ -118,7 +118,7 @@ class Multinet(mininet.net.Mininet):
             build=False,
             xterms=False,
             cleanup=False,
-            ipBase=self.__mininet_network,
+            ipBase=self.__mininet_network + '/' + str(self.__network_mask_bits),
             inNamespace=False,
             autoSetMacs=False,
             autoStaticArp=False,
