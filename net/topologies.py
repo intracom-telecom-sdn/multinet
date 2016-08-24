@@ -60,7 +60,7 @@ class IpAddressGenerator():
         # Initialize the Mininet network of the worker, based on the dpid.
         # Each worker has its own network.
         if dpid <= self.__available_networks:
-            self.mininet_network = self.long2ip(ip2long(self.__base_network) +
+            self.mininet_network = self.long2ip(self.ip2long(self.__base_network) +
                 (dpid * self.__network_ip_range))
         else:
             raise ValueError('Worker Mininet network is out of range.')
