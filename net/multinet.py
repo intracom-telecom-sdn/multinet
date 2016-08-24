@@ -19,6 +19,8 @@ import mininet.link
 import mininet.clean
 import itertools
 import net.topologies
+import socket
+import struct
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -73,6 +75,20 @@ class Multinet(mininet.net.Mininet):
                                         Packet_IN transmissions
             auto_detect_hosts (bool): Enable or disable automatic host detection
         """
+        self.__network_mask_bits = 8
+        self.__base_network = '10.0.0.0'
+        self.__network_ip_range = long(2 ** (32 - self.__network_mask_bits))
+        self.__available_networks = long(2 ** self.__network_mask_bits -
+            (self.ip2long(self.__base_network) / self.__network_ip_range))
+        # Initialize the Mininet network of the worker, based on the dpid.
+        # Each worker has its own network.
+        if dpid_offset <= self.__available_networks:
+            self.__mininet_network = self.long2ip(self.ip2long(self.base_network) +
+                (dpid_offset * self.__network_ip_range))
+        else:
+            error('Worker Mininet network is out of range.')
+            raise ValueError('Worker Mininet network is out of range.')
+
         self._topo_type = topo_type
         self._num_switches = num_switches
         self._dpid_offset = dpid_offset
@@ -102,7 +118,7 @@ class Multinet(mininet.net.Mininet):
             build=False,
             xterms=False,
             cleanup=False,
-            ipBase='10.0.0.0/8',
+            ipBase=self.__mininet_network,
             inNamespace=False,
             autoSetMacs=False,
             autoStaticArp=False,
@@ -361,3 +377,19 @@ class Multinet(mininet.net.Mininet):
         for host in self.hosts:
             host.waitOutput()
 
+    def ip2long(self, ip_str):
+        """
+        Convert an IP string to long number
+        Args:
+            ip_str (str): IP address as a string
+        """
+        packedIP = socket.inet_aton(ip_str)
+        return struct.unpack("!L", packedIP)[0]
+
+    def long2ip(self, ip_lng):
+        """
+        Convert long number to IP string
+        Args:
+            ip_lng (long): IP address as a long number
+        """
+        return socket.inet_ntoa(struct.pack('!L', ip_lng))
