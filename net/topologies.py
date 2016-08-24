@@ -1,10 +1,12 @@
 """
 Modified Topologies created with the High Level Mininet API
 """
+
 from mininet.topo import Topo
 import random
+import socket
 import string
-
+import struct
 
 
 def genHostName(i, j, dpid, n, k):
@@ -44,6 +46,39 @@ def genSwitchName(i, dpid, k):
     #return '{0}{1}'.format(name_prefix_list[(i + dpid)//999], (i + dpid)%999)
     return '{0}'.format(switch_id)
 
+class IpAddressGenerator():
+
+    def __init__(self, dpid):
+        self.network_mask_bits = 8
+        self.__base_network = '10.0.0.0'
+        self.__network_ip_range = long(2 ** (32 - self.network_mask_bits))
+        self.__next_ip_index = 0
+        self.__available_networks = long(2 ** self.network_mask_bits -
+            (self.ip2long(self.__base_network) / self.__network_ip_range))
+        if dpid <= self.__available_networks:
+            self.mininet_network = self.long2ip(ip2long(self.__base_network) +
+                (dpid * self.__network_ip_range))
+
+    def ip2long(self, ip_str):
+        """
+        Convert an IP string to long number
+        """
+        packedIP = socket.inet_aton(ip_str)
+        return struct.unpack("!L", packedIP)[0]
+
+    def long2ip(self, ip_lng):
+        """
+        Convert long number to IP string
+        """
+        socket.inet_ntoa(struct.pack('!L', ip_lng))
+
+    def generate_cidr_ip(self):
+        self.__next_ip_index += 1
+        if self.__next_ip_index <= (self.__network_ip_range - 2):
+            next_lng_ip = self.ip2long(self.mininet_network) + self.__next_ip_index
+            return (self.long2ip(next_lng_ip) +
+                    '/' + str(self.network_mask_bits))
+
 class LinearTopo(Topo):
     "Linear topology of k switches, with n hosts per switch."
 
@@ -52,19 +87,22 @@ class LinearTopo(Topo):
            n: number of hosts per switch"""
         self.k = k
         self.n = n
-
+        ip_generator = IpAddressGenerator(dpid)
         lastSwitch = None
+
         for i in xrange(k):
             # Add switch
             switch = self.addSwitch(genSwitchName(i, dpid, k))
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
+                host.setIP(ip_generator.generate_cidr_ip())
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
                 self.addLink(switch, lastSwitch)
             lastSwitch = switch
+        del ip_generator
 
 
 class RingTopo(Topo):
@@ -75,9 +113,10 @@ class RingTopo(Topo):
            n: number of hosts per switch"""
         self.k = k
         self.n = n
-
+        ip_generator = IpAddressGenerator(dpid)
         lastSwitch = None
         firstSwitch = None
+
         for i in xrange(k):
             # Add switch
             switch = self.addSwitch(genSwitchName(i, dpid, k))
@@ -86,12 +125,14 @@ class RingTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
+                host.setIP(ip_generator.generate_cidr_ip())
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
                 self.addLink(switch, lastSwitch)
             lastSwitch = switch
         self.addLink(lastSwitch, firstSwitch)
+        del ip_generator
 
 
 class DisconnectedTopo(Topo):
@@ -102,6 +143,7 @@ class DisconnectedTopo(Topo):
            n: number of hosts per switch"""
         self.k = k
         self.n = n
+        ip_generator = IpAddressGenerator(dpid)
 
         for i in xrange(k):
             # Add switch
@@ -109,7 +151,9 @@ class DisconnectedTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
+                host.setIP(ip_generator.generate_cidr_ip())
                 self.addLink(host, switch)
+        del ip_generator
 
 
 class MeshTopo(Topo):
@@ -120,19 +164,22 @@ class MeshTopo(Topo):
            n: number of hosts per switch"""
         self.k = k
         self.n = n
-
+        ip_generator = IpAddressGenerator(dpid)
         prevSwitches = []
+
         for i in xrange(k):
             # Add switch
             switch = self.addSwitch(genSwitchName(i, dpid, k))
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
+                host.setIP(ip_generator.generate_cidr_ip())
                 self.addLink(host, switch)
             # Connect switch to previous
             for prevSwitch in prevSwitches:
                 self.addLink(switch, prevSwitch)
             prevSwitches.append(switch)
+        del ip_generator
 
 
 
