@@ -91,8 +91,8 @@ class IpAddressGenerator():
         self.__next_ip_index += 1
         if self.__next_ip_index <= (self.__network_ip_range - 2):
             next_lng_ip = self.ip2long(self.mininet_network) + self.__next_ip_index
-            return (self.long2ip(next_lng_ip) +
-                    '/' + str(self.network_mask_bits))
+            return {'ip_addr':self.long2ip(next_lng_ip),
+                    'net_mask':self.network_mask_bits}
         else:
             raise ValueError('Hosts IP addresses are out of range.')
 
@@ -113,7 +113,8 @@ class LinearTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
-                host.setIP(ip_generator.generate_cidr_ip())
+                cidr_ip = ip_generator.generate_cidr_ip()
+                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
@@ -142,7 +143,8 @@ class RingTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
-                host.setIP(ip_generator.generate_cidr_ip())
+                cidr_ip = ip_generator.generate_cidr_ip()
+                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
@@ -168,7 +170,8 @@ class DisconnectedTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
-                host.setIP(ip_generator.generate_cidr_ip())
+                cidr_ip = ip_generator.generate_cidr_ip()
+                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
         del ip_generator
 
@@ -190,7 +193,8 @@ class MeshTopo(Topo):
             # Add hosts to switch
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
-                host.setIP(ip_generator.generate_cidr_ip())
+                cidr_ip = ip_generator.generate_cidr_ip()
+                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             for prevSwitch in prevSwitches:
