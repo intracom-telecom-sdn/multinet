@@ -55,9 +55,12 @@ class IpAddressGenerator():
         self.__next_ip_index = 0
         self.__available_networks = long(2 ** self.network_mask_bits -
             (self.ip2long(self.__base_network) / self.__network_ip_range))
+
         if dpid <= self.__available_networks:
             self.mininet_network = self.long2ip(ip2long(self.__base_network) +
                 (dpid * self.__network_ip_range))
+        else:
+            raise ValueError('Worker Mininet network is out of range.')
 
     def ip2long(self, ip_str):
         """
@@ -73,11 +76,18 @@ class IpAddressGenerator():
         socket.inet_ntoa(struct.pack('!L', ip_lng))
 
     def generate_cidr_ip(self):
+        """
+        Generates the next IP address with CIDR format inside the Mininet
+        network of the worker. Each worker has its own network, depend on
+        its dpid.
+        """
         self.__next_ip_index += 1
         if self.__next_ip_index <= (self.__network_ip_range - 2):
             next_lng_ip = self.ip2long(self.mininet_network) + self.__next_ip_index
             return (self.long2ip(next_lng_ip) +
                     '/' + str(self.network_mask_bits))
+        else:
+            raise ValueError('Hosts IP addresses are out of range.')
 
 class LinearTopo(Topo):
     "Linear topology of k switches, with n hosts per switch."
