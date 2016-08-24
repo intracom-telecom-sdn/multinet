@@ -53,9 +53,9 @@ class IpAddressGenerator():
     def __init__(self, dpid):
         self.network_mask_bits = 8
         self.__base_network = '10.0.0.0'
-        self.__network_ip_range = 2 ** (32 - self.network_mask_bits)
+        self.__network_ip_range = long(2 ** (32 - self.network_mask_bits))
         self.__next_ip_index = 0
-        self.__available_networks = int(2 ** self.network_mask_bits -
+        self.__available_networks = long(2 ** self.network_mask_bits -
             (self.ip2long(self.__base_network) / self.__network_ip_range))
         # Initialize the Mininet network of the worker, based on the dpid.
         # Each worker has its own network.
@@ -114,7 +114,7 @@ class LinearTopo(Topo):
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
                 cidr_ip = ip_generator.generate_cidr_ip()
-                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
+                self.hosts[-1].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
@@ -144,7 +144,7 @@ class RingTopo(Topo):
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
                 cidr_ip = ip_generator.generate_cidr_ip()
-                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
+                self.hosts[-1].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:
@@ -171,7 +171,7 @@ class DisconnectedTopo(Topo):
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
                 cidr_ip = ip_generator.generate_cidr_ip()
-                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
+                self.hosts[-1].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
         del ip_generator
 
@@ -194,7 +194,7 @@ class MeshTopo(Topo):
             for j in xrange(n):
                 host = self.addHost(genHostName(i, j, dpid, n, k))
                 cidr_ip = ip_generator.generate_cidr_ip()
-                self.g.node[host].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
+                self.hosts[-1].setIP(cidr_ip['ip_addr'], cidr_ip['net_mask'])
                 self.addLink(host, switch)
             # Connect switch to previous
             for prevSwitch in prevSwitches:
