@@ -47,6 +47,8 @@ def genSwitchName(i, dpid, k):
     return '{0}'.format(switch_id)
 
 class IpAddressGenerator():
+    """ IP address generator class. Generates IP addresses inside a Network
+    that is relevant to a base Network defined in initialization."""
 
     def __init__(self, dpid):
         self.network_mask_bits = 8
@@ -55,7 +57,8 @@ class IpAddressGenerator():
         self.__next_ip_index = 0
         self.__available_networks = long(2 ** self.network_mask_bits -
             (self.ip2long(self.__base_network) / self.__network_ip_range))
-
+        # Initialize the Mininet network of the worker, based on the dpid.
+        # Each worker has its own network.
         if dpid <= self.__available_networks:
             self.mininet_network = self.long2ip(ip2long(self.__base_network) +
                 (dpid * self.__network_ip_range))
@@ -65,6 +68,8 @@ class IpAddressGenerator():
     def ip2long(self, ip_str):
         """
         Convert an IP string to long number
+        Args:
+            ip_str (str): IP address as a string
         """
         packedIP = socket.inet_aton(ip_str)
         return struct.unpack("!L", packedIP)[0]
@@ -72,6 +77,8 @@ class IpAddressGenerator():
     def long2ip(self, ip_lng):
         """
         Convert long number to IP string
+        Args:
+            ip_lng (long): IP address as a long number
         """
         socket.inet_ntoa(struct.pack('!L', ip_lng))
 
