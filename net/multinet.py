@@ -83,7 +83,8 @@ class Multinet(mininet.net.Mininet):
         # Initialize the Mininet network of the worker, based on the dpid.
         # Each worker has its own network.
         if dpid_offset <= self.__available_networks:
-            self.__mininet_network = self.long2ip(self.ip2long(self.base_network) +
+            self.__mininet_network = self.long2ip(
+                self.ip2long(self.__base_network) +
                 (dpid_offset * self.__network_ip_range))
         else:
             error('Worker Mininet network is out of range.')
