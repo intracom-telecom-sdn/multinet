@@ -360,7 +360,7 @@ class Multinet(mininet.net.Mininet):
                 'sudo mz -a {0} -b {1} -t arp "targetip={2}, senderip={3}"'.
                 format(src_mac, dst_mac, arp_ip_h1, arp_ip_h1))
             self.hosts[host_index + 1].sendCmd(
-                'sudo mz -a {0} -b {1} -t arp "targetip={4}, senderip={5}"'.
+                'sudo mz -a {0} -b {1} -t arp "targetip={2}, senderip={3}"'.
                 format(dst_mac, src_mac, arp_ip_h2, arp_ip_h2))
             time.sleep(traffic_transmission_delay)
             host_index += self._hosts_per_switch
