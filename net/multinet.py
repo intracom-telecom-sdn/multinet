@@ -330,6 +330,7 @@ class Multinet(mininet.net.Mininet):
         return source_mac, dest_mac
 
 
+
     def generate_traffic(self):
         """
         Traffic generation from switches to controller
@@ -347,18 +348,22 @@ class Multinet(mininet.net.Mininet):
 
         transmission_start = time.time()
         last_mac = hex(int(hex(self._dpid_offset) + '00000000', 16) + 0xffffffff)
+        last_ip = self.ip2long('255.255.255.253')
         current_mac = hex(int(last_mac, 16) - 0x0000ffffffff + 0x000000000001)
+        current_ip = self.ip2long('0.0.0.1')
 
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
-
+            src_ip = self.long2ip(current_ip)
+            dst_ip = self.long2ip(current_ip + 1)
             current_mac = hex(int(current_mac, 16) + 2)
+            current_ip += 2
             self.hosts[host_index].sendCmd(
-                'sudo mz -a {0} -b {1} -t arp "targetmac={2}, sendermac={3}"'.
-                format(src_mac, dst_mac, 'ff:ff:ff:ff:ff:ff', src_mac))
+                'sudo mz -a {0} -b {1} -t arp "reply, targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
+                format(src_mac, dst_mac, dst_mac, src_mac, dst_ip, src_ip))
             self.hosts[host_index + 1].sendCmd(
-                'sudo mz -a {0} -b {1} -t arp "targetmac={2}, sendermac={3}"'.
-                format(dst_mac, src_mac, 'ff:ff:ff:ff:ff:ff', dst_mac))
+                'sudo mz -a {0} -b {1} -t arp "reply, targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
+                format(dst_mac, src_mac, src_mac, dst_mac, src_ip, dst_ip))
             time.sleep(traffic_transmission_delay)
             host_index += self._hosts_per_switch
 
@@ -366,6 +371,9 @@ class Multinet(mininet.net.Mininet):
                 for host in self.hosts:
                     host.waitOutput()
                 host_index = 0
+
+            if current_ip >= last_ip:
+                current_ip = self.ip2long('0.0.0.1')
 
             if int(current_mac, 16) >= int(last_mac, 16):
                 current_mac = \
