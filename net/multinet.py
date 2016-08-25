@@ -355,8 +355,8 @@ class Multinet(mininet.net.Mininet):
             current_mac = hex(int(current_mac, 16) + 2)
             self.hosts[host_index].sendCmd('sudo mz -a {0} -b {1} -t arp'.
                                            format(src_mac, dst_mac))
-            self.hosts[host_index + 1].sendCmd('sudo mz -a {0} -b {1} -t arp'.
-                                               format(dst_mac, src_mac))
+            #self.hosts[host_index + 1].sendCmd('sudo mz -a {0} -b {1} -t arp'.
+            #                                   format(dst_mac, src_mac))
             time.sleep(traffic_transmission_delay)
             host_index += self._hosts_per_switch
 
