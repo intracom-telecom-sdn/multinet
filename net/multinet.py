@@ -329,8 +329,6 @@ class Multinet(mininet.net.Mininet):
         dest_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 2))]*2))[6:]
         return source_mac, dest_mac
 
-
-
     def generate_traffic(self):
         """
         Traffic generation from switches to controller
@@ -359,10 +357,10 @@ class Multinet(mininet.net.Mininet):
             current_mac = hex(int(current_mac, 16) + 2)
             current_ip += 2
             self.hosts[host_index].sendCmd(
-                'sudo mz -a {0} -b {1} -t arp "reply, targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
+                'sudo mz -a {0} -b {1} -t arp "targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
                 format(src_mac, dst_mac, dst_mac, src_mac, dst_ip, src_ip))
             self.hosts[host_index + 1].sendCmd(
-                'sudo mz -a {0} -b {1} -t arp "reply, targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
+                'sudo mz -a {0} -b {1} -t arp "targetmac={2}, sendermac={3}, targetip={4}, senderip={5}"'.
                 format(dst_mac, src_mac, src_mac, dst_mac, src_ip, dst_ip))
             time.sleep(traffic_transmission_delay)
             host_index += self._hosts_per_switch
