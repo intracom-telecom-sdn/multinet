@@ -298,12 +298,17 @@ class Multinet(mininet.net.Mininet):
         """
         logging.info('[get_flows] Getting flows from switches.')
         flow_number_total = 0
+        t_start = time.time()
+
         for switch in self.switches:
             flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
             flow_number = len(flows_list) - 2
             flow_number_total += flow_number
 
         logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
+
+        flow_latency_interval_on_single_worker = time.time() - t_start
+        logging.info('flow_latency_interval_on_single_worker:{0} [sec]'.format(flow_latency_interval_on_single_worker))
         return flow_number_total
 
 
