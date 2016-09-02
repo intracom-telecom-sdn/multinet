@@ -115,8 +115,9 @@ def get_flows():
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
                                 'get_flows')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
-    flow_latency_interval_on_master = time.time() - t_start
-    logging.info('flow_latency_interval_on_master:{0} [sec]'.format(flow_latency_interval_on_master))
+    get_flow_latency = time.time() - t_start
+    logging.info('[get_flows] Flow latency interval on master: {0} [sec]'.
+                 format(get_flow_latency))
     return bottle.HTTPResponse(status=stat, body=bod)
 
 

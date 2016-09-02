@@ -299,16 +299,14 @@ class Multinet(mininet.net.Mininet):
         logging.info('[get_flows] Getting flows from switches.')
         flow_number_total = 0
         t_start = time.time()
-
         for switch in self.switches:
             flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
             flow_number = len(flows_list) - 2
             flow_number_total += flow_number
-
         logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
-
-        flow_latency_interval_on_single_worker = time.time() - t_start
-        logging.info('flow_latency_interval_on_single_worker:{0} [sec]'.format(flow_latency_interval_on_single_worker))
+        get_flow_latency = time.time() - t_start
+        logging.info('[get_flows] Latency of flows measurement:{0} [sec]'.
+                     format(get_flow_latency))
         return flow_number_total
 
 
@@ -356,9 +354,26 @@ class Multinet(mininet.net.Mininet):
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
             current_mac = hex(int(current_mac, 16) + 2)
-
+            # This is the place where generation of flows happens. In order to
+            # work properly we must configure the ODL controller with L2Switch
+            # plugin and each switch of the topology must have at least 2
+            # hosts.
+            # Step1:
+            # From host1 of switch1 we initially send a Gratuitous ARP Reply.
+            # We encapsulate this Reply in an ethernet frame with a specific
+            # src and dst MAC addresses, generated from the MAC address
+            # generator in this class.
+            # Step2:
+            # We repeat the above steps from host2 of switch1 reversing the src
+            # and dst MAC addresses of the ethernet frame.
+            # The above sequence has as a result to trigger ODL controller to
+            # respond with 2 FlowMod messages in order to establish a datapath
+            # between the 2 hosts
             self.hosts[host_index].sendCmd(
                 'sudo mz -a {0} -b {1} -t arp'.format(src_mac, dst_mac))
+            # We brake transmission delay and we place a delay between the
+            # transmission of the 2 Gratuitous ARP messages in order to avoid
+            # bursts of messages
             time.sleep(traffic_transmission_delay/2)
             self.hosts[host_index + 1].sendCmd(
                 'sudo mz -a {0} -b {1} -t arp'.format(dst_mac, src_mac))
