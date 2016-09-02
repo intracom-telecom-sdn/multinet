@@ -305,7 +305,7 @@ class Multinet(mininet.net.Mininet):
             flow_number_total += flow_number
         logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
         get_flow_latency = time.time() - t_start
-        logging.info('[get_flows] Latency of flows measurement:{0} [sec]'.
+        logging.info('[get_flows] Flow latency interval on worker: {0} [sec]]'.
                      format(get_flow_latency))
         return flow_number_total
 
