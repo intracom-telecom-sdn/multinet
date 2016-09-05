@@ -312,7 +312,7 @@ class Multinet(mininet.net.Mininet):
 
     def generate_mac_address_pairs(self, current_mac):
         """
-        Generated tuple of source/destination mac addressess
+        Generated tuple of source/destination mac addresses
 
         Args:
           current_mac (str): The last generated mac used for traffic
