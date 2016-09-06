@@ -31,7 +31,7 @@ def test_get_switches(config):
                             config['master_port'],
                             'get_switches')
     assert res.status_code == 200
-    
+
     dpid_range = m_util.dpid_offset_range(len(config['worker_ip_list']))
     res_json = json.loads(res.text)
     i=0
