@@ -19,6 +19,8 @@ import mininet.link
 import mininet.clean
 import itertools
 import net.topologies
+import socket
+import struct
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -73,6 +75,21 @@ class Multinet(mininet.net.Mininet):
                                         Packet_IN transmissions
             auto_detect_hosts (bool): Enable or disable automatic host detection
         """
+        self.__network_mask_bits = 8
+        self.__base_network = '10.0.0.0'
+        self.__network_ip_range = long(2 ** (32 - self.__network_mask_bits))
+        self.__available_networks = long(2 ** self.__network_mask_bits -
+            (self.ip2long(self.__base_network) / self.__network_ip_range))
+        # Initialize the Mininet network of the worker, based on the dpid.
+        # Each worker has its own network.
+        if dpid_offset <= self.__available_networks:
+            self.__mininet_network = self.long2ip(
+                self.ip2long(self.__base_network) +
+                (dpid_offset * self.__network_ip_range))
+        else:
+            error('Worker Mininet network is out of range.')
+            raise ValueError('Worker Mininet network is out of range.')
+
         self._topo_type = topo_type
         self._num_switches = num_switches
         self._dpid_offset = dpid_offset
@@ -102,7 +119,7 @@ class Multinet(mininet.net.Mininet):
             build=False,
             xterms=False,
             cleanup=False,
-            ipBase='10.0.0.0/8',
+            ipBase=self.__mininet_network + '/' + str(self.__network_mask_bits),
             inNamespace=False,
             autoSetMacs=False,
             autoStaticArp=False,
@@ -281,18 +298,29 @@ class Multinet(mininet.net.Mininet):
         """
         logging.info('[get_flows] Getting flows from switches.')
         flow_number_total = 0
+        t_start = time.time()
         for switch in self.switches:
+            #logging.debug('[get_flows] Raw command output' +  \
+            #              switch.dpctl('-O OpenFlow13 dump-aggregate'))
+            for stat_item in switch.dpctl('-O OpenFlow13 dump-aggregate').split(' '):
+                if stat_item.split('=')[0] == 'flow_count' and len(stat_item.split('=')) == 2:
+                    flow_number_total += int(stat_item.split('=')[-1])
+            """
             flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
             flow_number = len(flows_list) - 2
             flow_number_total += flow_number
-
+            """
+            #-------------------------------------------------------------------
         logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
+        get_flow_latency = time.time() - t_start
+        logging.info('[get_flows] Flow latency interval on worker: {0} [sec]]'.
+                     format(get_flow_latency))
         return flow_number_total
 
 
     def generate_mac_address_pairs(self, current_mac):
         """
-        Generated tuple of source/destination mac addressess
+        Generated tuple of source/destination mac addresses
 
         Args:
           current_mac (str): The last generated mac used for traffic
@@ -311,7 +339,6 @@ class Multinet(mininet.net.Mininet):
         source_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 1))]*2))[6:]
         dest_mac = ':'.join(''.join(pair) for pair in zip(*[iter(hex(int(generated_mac, 16) + 2))]*2))[6:]
         return source_mac, dest_mac
-
 
     def generate_traffic(self):
         """
@@ -334,13 +361,31 @@ class Multinet(mininet.net.Mininet):
 
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
-
             current_mac = hex(int(current_mac, 16) + 2)
-            self.hosts[host_index].sendCmd('sudo mz -a {0} -b {1} -t arp'.
-                                           format(src_mac, dst_mac))
-            self.hosts[host_index + 1].sendCmd('sudo mz -a {0} -b {1} -t arp'.
-                                               format(dst_mac, src_mac))
-            time.sleep(traffic_transmission_delay)
+            # This is the place where generation of flows happens. In order to
+            # work properly we must configure the ODL controller with L2Switch
+            # plugin and each switch of the topology must have at least 2
+            # hosts.
+            # Step1:
+            # From host1 of switch1 we initially send a Gratuitous ARP Reply.
+            # We encapsulate this Reply in an ethernet frame with a specific
+            # src and dst MAC addresses, generated from the MAC address
+            # generator in this class.
+            # Step2:
+            # We repeat the above steps from host2 of switch1 reversing the src
+            # and dst MAC addresses of the ethernet frame.
+            # The above sequence has as a result to trigger ODL controller to
+            # respond with 2 FlowMod messages in order to establish a datapath
+            # between the 2 hosts
+            self.hosts[host_index].sendCmd(
+                'sudo mz -a {0} -b {1} -t arp'.format(src_mac, dst_mac))
+            # We break transmission delay and we place a delay between the
+            # transmission of the 2 Gratuitous ARP messages in order to avoid
+            # bursts of messages
+            time.sleep(traffic_transmission_delay/2)
+            self.hosts[host_index + 1].sendCmd(
+                'sudo mz -a {0} -b {1} -t arp'.format(dst_mac, src_mac))
+            time.sleep(traffic_transmission_delay/2)
             host_index += self._hosts_per_switch
 
             if host_index >= len(self.hosts):
@@ -361,3 +406,19 @@ class Multinet(mininet.net.Mininet):
         for host in self.hosts:
             host.waitOutput()
 
+    def ip2long(self, ip_str):
+        """
+        Convert an IP string to long number
+        Args:
+            ip_str (str): IP address as a string
+        """
+        packedIP = socket.inet_aton(ip_str)
+        return struct.unpack("!L", packedIP)[0]
+
+    def long2ip(self, ip_lng):
+        """
+        Convert long number to IP string
+        Args:
+            ip_lng (long): IP address as a long number
+        """
+        return socket.inet_ntoa(struct.pack('!L', ip_lng))

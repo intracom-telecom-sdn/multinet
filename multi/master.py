@@ -14,6 +14,7 @@ to manage the distributed topologies
 import bottle
 import logging
 import util.multinet_requests as m_util
+import time
 
 # We must define logging level separately because this module runs
 # independently.
@@ -110,9 +111,13 @@ def get_flows():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
+    t_start = time.time()
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
                                 'get_flows')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
+    get_flow_latency = time.time() - t_start
+    logging.info('[get_flows] Flow latency interval on master: {0} [sec]'.
+                 format(get_flow_latency))
     return bottle.HTTPResponse(status=stat, body=bod)
 
 

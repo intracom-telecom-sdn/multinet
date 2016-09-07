@@ -155,7 +155,6 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
                                                 result_queue,))
         processes.append(process)
         process.start()
-        time.sleep(1)
 
     for process in processes:
         process.join()
