@@ -379,7 +379,7 @@ class Multinet(mininet.net.Mininet):
             # between the 2 hosts
             self.hosts[host_index].sendCmd(
                 'sudo mz -a {0} -b {1} -t arp'.format(src_mac, dst_mac))
-            # We brake transmission delay and we place a delay between the
+            # We break transmission delay and we place a delay between the
             # transmission of the 2 Gratuitous ARP messages in order to avoid
             # bursts of messages
             time.sleep(traffic_transmission_delay/2)
