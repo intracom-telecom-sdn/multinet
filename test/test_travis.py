@@ -48,8 +48,3 @@ def test_stop(config):
     assert res.status_code == 200
 
 
-
-
-   
-    
-    
