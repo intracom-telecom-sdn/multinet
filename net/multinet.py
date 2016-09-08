@@ -300,17 +300,9 @@ class Multinet(mininet.net.Mininet):
         flow_number_total = 0
         t_start = time.time()
         for switch in self.switches:
-            #logging.debug('[get_flows] Raw command output' +  \
-            #              switch.dpctl('-O OpenFlow13 dump-aggregate'))
             for stat_item in switch.dpctl('-O OpenFlow13 dump-aggregate').split(' '):
                 if stat_item.split('=')[0] == 'flow_count' and len(stat_item.split('=')) == 2:
                     flow_number_total += int(stat_item.split('=')[-1])
-            """
-            flows_list = switch.dpctl('-O OpenFlow13 dump-flows').split('\n')
-            flow_number = len(flows_list) - 2
-            flow_number_total += flow_number
-            """
-            #-------------------------------------------------------------------
         logging.debug('[get_flows] number of flows: {0}'.format(flow_number_total))
         get_flow_latency = time.time() - t_start
         logging.info('[get_flows] Flow latency interval on worker: {0} [sec]]'.
@@ -362,7 +354,7 @@ class Multinet(mininet.net.Mininet):
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
             current_mac = hex(int(current_mac, 16) + 2)
-            # This is the place where generation of flows happens. In order to
+            # At this is place generation of flows happens. In order to
             # work properly we must configure the ODL controller with L2Switch
             # plugin and each switch of the topology must have at least 2
             # hosts.
