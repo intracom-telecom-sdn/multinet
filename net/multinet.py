@@ -354,10 +354,9 @@ class Multinet(mininet.net.Mininet):
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
             current_mac = hex(int(current_mac, 16) + 2)
-            # At this is place generation of flows happens. In order to
-            # work properly we must configure the ODL controller with L2Switch
-            # plugin and each switch of the topology must have at least 2
-            # hosts.
+            # Flows generation section. In order to work properly we must
+            # configure the ODL controller with L2Switch plugin and each switch
+            # of the topology must have at least 2 hosts.
             # Step1:
             # From host1 of switch1 we initially send a Gratuitous ARP Reply.
             # We encapsulate this Reply in an ethernet frame with a specific
