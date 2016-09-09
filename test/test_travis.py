@@ -31,15 +31,16 @@ def test_get_switches(config):
                             config['master_port'],
                             'get_switches')
     assert res.status_code == 200
-    
+
     dpid_range = m_util.dpid_offset_range(len(config['worker_ip_list']))
     res_json = json.loads(res.text)
     i=0
     for d in res_json:
         for k, v in json.loads(d).items():
-            assert k == 'dpid-{0}'.format(dpid_range[i])
+            assert k == 'dpid-{0}'.format(dpid_range[int(k.split('-')[-1])])
             assert int(v) == int(config['topo']['topo_size'])
             i += 1
+    assert i == len(config['worker_ip_list'])
 
 def test_stop(config):
     res = m_util.master_cmd(config['master_ip'],
