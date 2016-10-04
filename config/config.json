@@ -1,16 +1,17 @@
 {
-  "master_ip" : "10.1.1.90",
+  "venv_path":"/opt/venv_multinet",
+  "master_ip" : "10.0.1.12",
   "master_port": 3300,
-  "worker_ip_list": ["10.1.1.90", "10.1.1.91"],
+  "worker_ip_list": ["10.0.1.12", "10.0.1.13"],
   "worker_port_list": [3333, 3333],
         "deploy": {
-    "multinet_base_dir": "/home/vagrant/multinet",
+    "multinet_base_dir": "/opt/nstat/emulators/multinet",
     "ssh_port": 22,
-    "username": "vagrant",
-    "password": "vagrant"
+    "username": "root",
+    "password": "root123"
   },
   "topo": {
-    "controller_ip_address":"10.1.38.45",
+    "controller_ip_address":"10.0.1.11",
     "controller_of_port":6653,
     "switch_type":"ovsk",
     "topo_type":"linear",
