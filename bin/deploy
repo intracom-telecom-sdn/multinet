@@ -9,6 +9,7 @@ import util.netutil
 import util.multinet_requests as m_util
 import time
 import logging
+import os
 import sys
 
 if __name__ == '__main__':
@@ -42,7 +43,8 @@ if __name__ == '__main__':
     logging.info('PYTHONPATH=%s' % pythonpath)
     venv_path = ''
     if 'venv_path' in conf:
-        venv_path = conf['venv_path']
+        if os.path.isdir(conf['venv_path']):
+            venv_path = conf['venv_path']
     master_boot_command = (
         'bash {1}/bin/venv_handler_master.sh {0} {1} {2} {3} > /tmp/multinet/master_log.txt 2>&1 &'.format(
             venv_path,

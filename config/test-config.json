@@ -1,26 +1,27 @@
 {
-	"master_ip" : "127.0.0.1",
-	"master_port": 3300,
-	"worker_port_list": [3333, 3335],
-	"worker_ip_list": ["127.0.0.1", "127.0.0.1"],
+    "venv_path":"/opt/venv_multinet",
+    "master_ip" : "127.0.0.1",
+    "master_port": 3300,
+    "worker_port_list": [3333, 3335],
+    "worker_ip_list": ["127.0.0.1", "127.0.0.1"],
 
-	"deploy": {
-		"multinet_base_dir": "/opt/multinet",
-		"ssh_port": 22,
-		"username": "multinet",
-		"password": "multinet"
-	},
+    "deploy": {
+        "multinet_base_dir": "/opt/multinet",
+        "ssh_port": 22,
+        "username": "multinet",
+        "password": "multinet"
+    },
 
-	"topo": {
-		"controller_ip_address":"10.1.1.39",
-		"controller_of_port":6653,
-		"switch_type":"ovsk",
-		"topo_type":"linear",
-		"topo_size":10,
-		"group_size":10,
-		"group_delay":100,
-		"hosts_per_switch":2,
-		"traffic_generation_duration_ms":60000,
-		"interpacket_delay_ms":5000
-	}
+    "topo": {
+        "controller_ip_address":"10.1.1.39",
+        "controller_of_port":6653,
+        "switch_type":"ovsk",
+        "topo_type":"linear",
+        "topo_size":10,
+        "group_size":10,
+        "group_delay":100,
+        "hosts_per_switch":2,
+        "traffic_generation_duration_ms":60000,
+        "interpacket_delay_ms":5000
+    }
 }

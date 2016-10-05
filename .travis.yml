@@ -4,39 +4,38 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-
 sudo: required
 dist: trusty
-
 
 language: python
 python:
   - "2.7"
 
-
 virtualenv:
   system_site_packages: true
 
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y python-bottle python-requests
+#before_install:
 
 # command to install dependencies
-install: 
-  - pip install -r requirements.txt
-  - pip install -U pytest
-  - sudo bash travis-jobs/install-mininet.sh
+#install:
 
 before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install python-bottle
+  - sudo bash ./deploy/provision.sh
   - sudo bash travis-jobs/create_user.sh
-  - sudo cp -r `pwd` /opt/
 
 script:
-  - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
+  - source /opt/venv_multinet/bin/activate
+  - bash /opt/multinet/bin/venv_handler_master.sh /opt/venv_multinet /opt/multinet /opt/multinet/bin/deploy /opt/multinet/config/test-config.json
+#  - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
   - cat /tmp/multinet/master_log.txt
-  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt 
-  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt 
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt
   - ps aux | grep python
   - PYTHONPATH=/opt/multinet py.test test
+  - cat /tmp/multinet/master_log.txt
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt
   - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
+  - deactivate
