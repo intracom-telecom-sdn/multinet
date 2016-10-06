@@ -21,7 +21,6 @@ virtualenv:
 
 before_script:
   - sudo apt-get update -qq
-#  - sudo apt-get install python-bottle
   - sudo bash ./deploy/provision.sh
   - sudo bash travis-jobs/create_user.sh
 
