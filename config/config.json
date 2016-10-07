@@ -1,5 +1,4 @@
 {
-  "venv_path":"/opt/venv_multinet",
   "master_ip" : "10.0.1.12",
   "master_port": 3300,
   "worker_ip_list": ["10.0.1.12", "10.0.1.13"],
