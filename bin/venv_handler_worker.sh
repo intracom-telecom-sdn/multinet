@@ -9,18 +9,14 @@
 # This script is responsible for activating virtual environment for the
 # worker process initialization.
 # Arguments:
-# 1. virtual env base path (optional argument)
-# 2. PYTHONPATH
-# 3. Path of the worker python file
-# 4. IP address of the worker host
-# 5. Port number of the REST interface of the worker process
+# 1. PYTHONPATH
+# 2. Path of the worker python file
+# 3. IP address of the worker host
+# 4. Port number of the REST interface of the worker process
 
-if [ "$#" -eq 5 ]
+if [ "$#" -eq 4 ]
 then
-    source $1/bin/activate; PYTHONPATH=$2 python $3 --rest-host $4 --rest-port $5
-elif [ "$#" -eq 4 ]
-then
-    PYTHONPATH=$1 python $2 --rest-host $3 --rest-port $4
+    source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --rest-host $3 --rest-port $4
 else
     echo "Invalid number of arguments."
     exit 1

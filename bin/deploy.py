@@ -42,12 +42,8 @@ if __name__ == '__main__':
     pythonpath = '/tmp/multinet'
     logging.info('PYTHONPATH=%s' % pythonpath)
     venv_path = ''
-    if 'venv_path' in conf:
-        if os.path.isdir(conf['venv_path']):
-            venv_path = conf['venv_path']
     master_boot_command = (
-        'bash {1}/bin/venv_handler_master.sh {0} {1} {2} {3} > /tmp/multinet/master_log.txt 2>&1 &'.format(
-            venv_path,
+        'bash {0}/bin/venv_handler_master.sh {0} {1} {2} > /tmp/multinet/master_log.txt 2>&1 &'.format(
             pythonpath,
             master_remote_path,
             config_file))
@@ -83,8 +79,7 @@ if __name__ == '__main__':
 
     for curr_ip, worker_port in zip(worker_ips,worker_port_list):
         worker_boot_command = (
-            'sudo bash {1}/bin/venv_handler_worker.sh {0} {1} {2} {3} {4} > {2}_{3}_{4}_log.txt 2>&1 &'. format(
-                venv_path,
+            'sudo bash {0}/bin/venv_handler_worker.sh {0} {1} {2} {3} > {1}_{2}_{3}_log.txt 2>&1 &'. format(
                 pythonpath,
                 worker_remote_path,
                 curr_ip,

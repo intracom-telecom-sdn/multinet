@@ -9,17 +9,13 @@
 # This script is responsible for activating virtual environment for multinet
 # handlers.
 # Arguments:
-# 1. virtual env base path (optional argument)
-# 2. PYTHONPATH
-# 3. Handler path
-# 4. Config path. The json configuration file path.
+# 1. PYTHONPATH
+# 2. Handler path
+# 3. Config path. The json configuration file path.
 
-if [ "$#" -eq 4 ]
+if [ "$#" -eq 3 ]
 then
-    source $1/bin/activate; PYTHONPATH=$2 python $3 --json-config $4
-elif [ "$#" -eq 3 ]
-then
-    PYTHONPATH=$1 python $2 --json-config $3
+    source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
 else
     echo "Invalid number of arguments."
     exit 1
