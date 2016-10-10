@@ -87,29 +87,29 @@ You can use Vagrant to setup a testing environment quickly.
 Using the provided `Vagrantfile` you can boot a configurable number of
 fully provisioned VMs in a private network and specify their IP scheme.
 
-Under the `vagrant` directory we provide scripts and Vagrantfiles to
+Under the `deploy/vagrant` directory we provide scripts and Vagrantfiles to
 automatically setup a distributed environment of VMs to run Multinet. The steps
 for this are:
 
 1. Provision the base box from which VMs will be instantiated:
 
    ```bash
-   [user@machine multinet/]$ cd vagrant/base/
+   [user@machine multinet/]$ cd deploy/vagrant/base/
    ```
 
    If you sit behind a proxy, edit the `http_proxy` variable in the
    `Vagrantfile`. Then start provisioning:
 
    ```bash
-   [user@machine multinet/vagrant/base]$ vagrant up
+   [user@machine multinet/deploy/vagrant/base]$ vagrant up
    ```
 
    When the above command finishes, package the base box that has been created:
 
    ```bash
-   [user@machine multinet/vagrant/base]$ vagrant package --output mh-provisioned.box
-   [user@machine multinet/vagrant/base]$ vagrant box add mh-provisioned mh-provisioned.box
-   [user@machine multinet/vagrant/base]$ vagrant destroy
+   [user@machine multinet/deploy/vagrant/base]$ vagrant package --output mh-provisioned.box
+   [user@machine multinet/deploy/vagrant/base]$ vagrant box add mh-provisioned mh-provisioned.box
+   [user@machine multinet/deploy/vagrant/base]$ vagrant destroy
    ```
 
    For more info on Vagrant box packaging take a look at
@@ -118,7 +118,7 @@ for this are:
 2. Configure the VMs:
 
    ```bash
-   [user@machine multinet/]$ cd vagrant/packaged_multi/
+   [user@machine multinet/]$ cd deploy/vagrant/packaged_multi/
    ```
 
    Edit the `Vagrantfile` according to your preferences. For example:
@@ -153,7 +153,7 @@ for this are:
 3. Boot the VMs:
 
      ```bash
-     [user@machine multinet/vagrant/packaged_multi]$ vagrant up
+     [user@machine multinet/deploy/vagrant/packaged_multi]$ vagrant up
      ```
 
 You should now have a number of interconnected VMs with all the dependencies installed.
