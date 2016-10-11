@@ -158,6 +158,63 @@ for this are:
 
 You should now have a number of interconnected VMs with all the dependencies installed.
 
+#### Environment setup using Docker
+
+In order to create a docker container we must first create an image which will
+be used as a base for creating one or more docker containers. For the creation
+of a docker image we provide a dockerfile
+
+1. Install docker: [docker installation guides](https://docs.docker.com/engine/installation/)
+
+2. Creation of docker image (without proxy settings):
+
+   ```bash
+   [user@machine multinet/]$ cd deploy/docker/no_proxy/
+   [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker build -t multinet_image .
+   ```
+
+After this step when you run the command
+
+   ```bash
+   [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker images
+   ```
+
+You should see something like the following output
+
+   ```bash
+   REPOSITORY          TAG                   IMAGE ID            CREATED             SIZE
+   <repo_name>         multinet_image        a75c906f03c7        1 minute ago        1.72 GB
+   ```
+
+3. Create containers from the created image: Open 2 terminals and execute the
+following command in order to create 2 docker containers
+
+   ```bash
+   [user@machine]$ sudo docker run -it <repo_name>:multinet_image /bin/bash
+   ```
+
+After running the above commands on each terminal you should see the command
+prompt of the container. It should be something like the following
+
+   ```bash
+   root@cfb6dccfc41d:/#
+   ```
+
+The 2 containers are interconnected you can get the ip address information if
+you run the command
+
+   ```bash
+   root@cfb6dccfc41d:/# ifconfig
+   ```
+
+The default docker network for the containers is 172.17.0.0/16. Use the IP
+addresses you of docker containers in the configuration file for the
+`"master_ip":` and `"worker_ip_list":`, see next in the document in the
+`configuration` section of multinet. For more information about docker
+container networks visit the link
+[Understand Docker container networks](https://docker.github.io/engine/userguide/networking/)
+
+
 
 #### Configuration
 
