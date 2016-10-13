@@ -172,14 +172,12 @@ of a docker image we provide a dockerfile
    [user@machine multinet/]$ cd deploy/docker/no_proxy/
    [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker build -t multinet_image .
    ```
-
-After this step when you run the command
+   After this step when you run the command
 
    ```bash
    [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker images
    ```
-
-You should see something like the following output
+   You should see something like the following output
 
    ```bash
    REPOSITORY          TAG                   IMAGE ID            CREATED             SIZE
@@ -192,24 +190,22 @@ following command in order to create 2 docker containers
    ```bash
    [user@machine]$ sudo docker run -it <repo_name>:multinet_image /bin/bash
    ```
-
-After running the above commands on each terminal you should see the command
-prompt of the container. It should be something like the following
+   After running the above commands on each terminal you should see the command
+   prompt of the container. It should be something like the following
 
    ```bash
    root@cfb6dccfc41d:/#
    ```
-
 The 2 containers are interconnected you can get the ip address information if
 you run the command
 
-   ```bash
-   root@cfb6dccfc41d:/# ifconfig
-   ```
+```bash
+root@cfb6dccfc41d:/# ifconfig
+```
 
 The default docker network for the containers is 172.17.0.0/16. Use the IP
-addresses you of docker containers in the configuration file for the
-`"master_ip":` and `"worker_ip_list":`, see next in the document in the
+addresses of docker containers in the configuration file for the
+`"master_ip":` and `"worker_ip_list":`. See next in the document in the
 `configuration` section of multinet. For more information about docker
 container networks visit the link
 [Understand Docker container networks](https://docker.github.io/engine/userguide/networking/)
