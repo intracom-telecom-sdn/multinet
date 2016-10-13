@@ -196,11 +196,17 @@ following command in order to create 2 docker containers
    ```bash
    root@cfb6dccfc41d:/#
    ```
+   Multinet, inside a docker container, is under the path /opt/multinet
+
+   ```bash
+   root@cfb6dccfc41d:/#cd /opt/multinet
+   ```
+
 The 2 containers are interconnected you can get the ip address information if
 you run the command
 
 ```bash
-root@cfb6dccfc41d:/# ifconfig
+root@cfb6dccfc41d:/opt/multinet# ifconfig
 ```
 
 The default docker network for the containers is 172.17.0.0/16. Use the IP
@@ -209,7 +215,6 @@ addresses of docker containers in the configuration file for the
 `configuration` section of multinet. For more information about docker
 container networks visit the link
 [Understand Docker container networks](https://docker.github.io/engine/userguide/networking/)
-
 
 
 #### Configuration
