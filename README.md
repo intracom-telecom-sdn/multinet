@@ -75,10 +75,13 @@ as follows:
     - the machines should be able to communicate with each other
     - the machines should have SSH connectivity
 
-In the next section we demonstrate how to prepare such an environment using
-[Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs.
-If you already have a custom environment set up, jump to
-[configuration](#configuration) section.
+The above Software dependencies are installed inside a `virtualenv`
+[(isolated Python environment)](https://virtualenv.pypa.io/en/stable/),
+which is created from the `deploy/provision.sh` script which is responsible
+for the environment setup. In the next section we demonstrate how to prepare
+such an environment using
+[Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs and
+[docker](https://docker.github.io/) to provision multiple containers.
 
 
 #### Environment setup using Vagrant
@@ -314,7 +317,7 @@ Run the `deploy` script from the client machine to copy the
 necessary files and start the master and the workers:
 
    ```bash
-   [user@machine multinet/]$ bin/deploy --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/deploy /opt/multinet/config/config.json
    ```
 
 #### Initialize Multinet topology
@@ -326,7 +329,7 @@ as switches, links, hosts, etc.
 Run the following command from the client machine:
 
    ```bash
-   [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/init_topos /opt/multinet/config/config.json
    ```
 
 The above will send an `init` command to every worker node concurrently,
@@ -359,7 +362,7 @@ To connect a Multinet topology after it has been initialized, run the following
 command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/start_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/start_topos /opt/multinet/config/config.json
    ```
 
 The above will send a `start` command to every worker node in parallel and
@@ -377,7 +380,7 @@ To query Multinet for the number of booted switches on each worker node, run the
 following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/get_switches --json-config config/config.json
+   [user@machine multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/get_switches /opt/multinet/config/config.json
    ```
 
 If the distributed topologies have been successfully booted, you should
@@ -390,7 +393,7 @@ To query Multinet for the number of all installed flows on topology switches on
 each worker, we can use the following command:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/get_flows --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/get_flows /opt/multinet/config/config.json
    ```
 
 With this command on each switch we get a dump of its flows and we count them.
@@ -405,7 +408,7 @@ To perform a "pingall" operation on every worker node in parallel run the follow
 command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/pingall --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/pingall /opt/multinet/config/config.json
    ```
 
 If the operation runs on a successfully booted topology you should
@@ -425,7 +428,7 @@ host to the controller, which fires a `PACKET_IN` transmission.
 To do this, run the following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/detect_hosts /opt/multinet/config/config.json
    ```
 
 If all the topologies are booted successfully you should synchronously
@@ -439,7 +442,7 @@ time to complete if the topology has many hosts.
 To stop a Multinet topology run the following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/stop_topos /opt/multinet/config/config.json
    ```
 
 The above will send a `stop` command to every worker node in parallel and destroy the
@@ -453,7 +456,7 @@ A dedicated script exist to revert the Multinet deployment. To clean all the Mul
 machines simply run:
 
 ```bash
-[user@machine multinet/]$ bin/cleanup --json-config config.json
+[user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/cleanup /opt/multinet/config/config.json
 ```
 
 
@@ -505,7 +508,7 @@ In order to use the `PACKET_IN` generation capability, the following command mus
 be executed:
 
 ```bash
-[user@machine multinet/]$ bin/handlers/traffic_gen --json-config config/config.json
+[user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/traffic_gen /opt/multinet/config/config.json
 ```
 
 ## System Architecture
