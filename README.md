@@ -75,7 +75,7 @@ as follows:
     - the machines should be able to communicate with each other
     - the machines should have SSH connectivity
 
-The above Software dependencies are installed inside a `virtualenv`
+The above software dependencies are installed inside a `virtualenv`
 [(isolated Python environment)](https://virtualenv.pypa.io/en/stable/),
 which is created from the `deploy/provision.sh` script which is responsible
 for the environment setup. In the next section we demonstrate how to prepare
@@ -311,7 +311,9 @@ Edit the configuration file to the desired topology features:
 The goal of this phase is to deploy the Multinet master and worker nodes on a set of
 up and running physical or virtual machines that satisfy the conditions mentioned above.
 The provided `deploy` script automates the process of copying the required files on
-each machine and starting the `master` and `worker` REST servers.
+each machine and starting the `master` and `worker` REST servers. The deployment process
+assumes the existence of the /opt/venv_multinet directory created by deploy/provsision.sh
+desdribed in [Environment setup](environment-setup) section.
 
 Run the `deploy` script from the client machine to copy the
 necessary files and start the master and the workers:
