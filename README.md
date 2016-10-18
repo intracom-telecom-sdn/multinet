@@ -75,10 +75,13 @@ as follows:
     - the machines should be able to communicate with each other
     - the machines should have SSH connectivity
 
-In the next section we demonstrate how to prepare such an environment using
-[Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs.
-If you already have a custom environment set up, jump to
-[configuration](#configuration) section.
+The above software dependencies are installed inside a `virtualenv`
+[(isolated Python environment)](https://virtualenv.pypa.io/en/stable/),
+which is created from the `deploy/provision.sh` script which is responsible
+for the environment setup. In the next section we demonstrate how to prepare
+such an environment using
+[Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs and
+[docker](https://docker.github.io/) to provision multiple containers.
 
 
 #### Environment setup using Vagrant
@@ -87,29 +90,29 @@ You can use Vagrant to setup a testing environment quickly.
 Using the provided `Vagrantfile` you can boot a configurable number of
 fully provisioned VMs in a private network and specify their IP scheme.
 
-Under the `vagrant` directory we provide scripts and Vagrantfiles to
+Under the `deploy/vagrant` directory we provide scripts and Vagrantfiles to
 automatically setup a distributed environment of VMs to run Multinet. The steps
 for this are:
 
 1. Provision the base box from which VMs will be instantiated:
 
    ```bash
-   [user@machine multinet/]$ cd vagrant/base/
+   [user@machine multinet/]$ cd deploy/vagrant/base/
    ```
 
    If you sit behind a proxy, edit the `http_proxy` variable in the
    `Vagrantfile`. Then start provisioning:
 
    ```bash
-   [user@machine multinet/vagrant/base]$ vagrant up
+   [user@machine multinet/deploy/vagrant/base]$ vagrant up
    ```
 
    When the above command finishes, package the base box that has been created:
 
    ```bash
-   [user@machine multinet/vagrant/base]$ vagrant package --output mh-provisioned.box
-   [user@machine multinet/vagrant/base]$ vagrant box add mh-provisioned mh-provisioned.box
-   [user@machine multinet/vagrant/base]$ vagrant destroy
+   [user@machine multinet/deploy/vagrant/base]$ vagrant package --output mh-provisioned.box
+   [user@machine multinet/deploy/vagrant/base]$ vagrant box add mh-provisioned mh-provisioned.box
+   [user@machine multinet/deploy/vagrant/base]$ vagrant destroy
    ```
 
    For more info on Vagrant box packaging take a look at
@@ -118,7 +121,7 @@ for this are:
 2. Configure the VMs:
 
    ```bash
-   [user@machine multinet/]$ cd vagrant/packaged_multi/
+   [user@machine multinet/]$ cd deploy/vagrant/packaged_multi/
    ```
 
    Edit the `Vagrantfile` according to your preferences. For example:
@@ -153,10 +156,68 @@ for this are:
 3. Boot the VMs:
 
      ```bash
-     [user@machine multinet/vagrant/packaged_multi]$ vagrant up
+     [user@machine multinet/deploy/vagrant/packaged_multi]$ vagrant up
      ```
 
 You should now have a number of interconnected VMs with all the dependencies installed.
+
+#### Environment setup using Docker
+
+In order to create a docker container we must first create an image which will
+be used as a base for creating one or more docker containers. For the creation
+of a docker image we provide a dockerfile
+
+1. Install docker: [docker installation guides](https://docs.docker.com/engine/installation/)
+
+2. Creation of docker image (without proxy settings):
+
+   ```bash
+   [user@machine multinet/]$ cd deploy/docker/no_proxy/
+   [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker build -t multinet_image .
+   ```
+   After this step when you run the command
+
+   ```bash
+   [user@machine multinet/deploy/docker/no_proxy/]$ sudo docker images
+   ```
+   You should see something like the following output
+
+   ```bash
+   REPOSITORY          TAG                   IMAGE ID            CREATED             SIZE
+   <repo_name>         multinet_image        a75c906f03c7        1 minute ago        1.72 GB
+   ```
+
+3. Create containers from the created image: Open 2 terminals and execute the
+following command in order to create 2 docker containers
+
+   ```bash
+   [user@machine]$ sudo docker run -it <repo_name>:multinet_image /bin/bash
+   ```
+   After running the above commands on each terminal you should see the command
+   prompt of the container. It should be something like the following
+
+   ```bash
+   root@cfb6dccfc41d:/#
+   ```
+   Multinet, inside a docker container, is under the path /opt/multinet
+
+   ```bash
+   root@cfb6dccfc41d:/#cd /opt/multinet
+   ```
+
+The 2 containers are interconnected you can get the ip address information if
+you run the command
+
+```bash
+root@cfb6dccfc41d:/opt/multinet# ifconfig
+```
+
+The default docker network for the containers is 172.17.0.0/16. Use the IP
+addresses of docker containers in the configuration file for the
+`"master_ip":` and `"worker_ip_list":`. See next in the document in the
+`configuration` section of multinet. For more information about docker
+container networks visit the link
+[Understand Docker container networks](https://docker.github.io/engine/userguide/networking/)
 
 
 #### Configuration
@@ -250,13 +311,15 @@ Edit the configuration file to the desired topology features:
 The goal of this phase is to deploy the Multinet master and worker nodes on a set of
 up and running physical or virtual machines that satisfy the conditions mentioned above.
 The provided `deploy` script automates the process of copying the required files on
-each machine and starting the `master` and `worker` REST servers.
+each machine and starting the `master` and `worker` REST servers. The deployment process
+assumes the existence of the /opt/venv_multinet directory created by deploy/provsision.sh
+desdribed in [Environment setup](#environment-setup) section.
 
 Run the `deploy` script from the client machine to copy the
 necessary files and start the master and the workers:
 
    ```bash
-   [user@machine multinet/]$ bin/deploy --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/deploy /opt/multinet/config/config.json
    ```
 
 #### Initialize Multinet topology
@@ -268,7 +331,7 @@ as switches, links, hosts, etc.
 Run the following command from the client machine:
 
    ```bash
-   [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/init_topos /opt/multinet/config/config.json
    ```
 
 The above will send an `init` command to every worker node concurrently,
@@ -301,7 +364,7 @@ To connect a Multinet topology after it has been initialized, run the following
 command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/start_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/start_topos /opt/multinet/config/config.json
    ```
 
 The above will send a `start` command to every worker node in parallel and
@@ -319,7 +382,7 @@ To query Multinet for the number of booted switches on each worker node, run the
 following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/get_switches --json-config config/config.json
+   [user@machine multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/get_switches /opt/multinet/config/config.json
    ```
 
 If the distributed topologies have been successfully booted, you should
@@ -332,7 +395,7 @@ To query Multinet for the number of all installed flows on topology switches on
 each worker, we can use the following command:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/get_flows --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/get_flows /opt/multinet/config/config.json
    ```
 
 With this command on each switch we get a dump of its flows and we count them.
@@ -347,7 +410,7 @@ To perform a "pingall" operation on every worker node in parallel run the follow
 command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/pingall --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/pingall /opt/multinet/config/config.json
    ```
 
 If the operation runs on a successfully booted topology you should
@@ -367,7 +430,7 @@ host to the controller, which fires a `PACKET_IN` transmission.
 To do this, run the following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/detect_hosts /opt/multinet/config/config.json
    ```
 
 If all the topologies are booted successfully you should synchronously
@@ -381,7 +444,7 @@ time to complete if the topology has many hosts.
 To stop a Multinet topology run the following command from the client machine:
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
+   [user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/stop_topos /opt/multinet/config/config.json
    ```
 
 The above will send a `stop` command to every worker node in parallel and destroy the
@@ -395,7 +458,7 @@ A dedicated script exist to revert the Multinet deployment. To clean all the Mul
 machines simply run:
 
 ```bash
-[user@machine multinet/]$ bin/cleanup --json-config config.json
+[user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/cleanup /opt/multinet/config/config.json
 ```
 
 
@@ -447,7 +510,7 @@ In order to use the `PACKET_IN` generation capability, the following command mus
 be executed:
 
 ```bash
-[user@machine multinet/]$ bin/handlers/traffic_gen --json-config config/config.json
+[user@machine /opt/multinet/]$ ./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/handlers/traffic_gen /opt/multinet/config/config.json
 ```
 
 ## System Architecture
