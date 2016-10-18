@@ -313,7 +313,7 @@ up and running physical or virtual machines that satisfy the conditions mentione
 The provided `deploy` script automates the process of copying the required files on
 each machine and starting the `master` and `worker` REST servers. The deployment process
 assumes the existence of the /opt/venv_multinet directory created by deploy/provsision.sh
-desdribed in [Environment setup](Environment-setup) section.
+desdribed in [Environment setup](#environment-setup) section.
 
 Run the `deploy` script from the client machine to copy the
 necessary files and start the master and the workers:
