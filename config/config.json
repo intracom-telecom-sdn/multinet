@@ -14,7 +14,7 @@
     "controller_of_port":6653,
     "switch_type":"ovsk",
     "topo_type":"linear",
-    "topo_size":300,
+    "topo_size":100,
     "group_size":1,
     "group_delay":100,
     "hosts_per_switch":2,
