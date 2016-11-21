@@ -319,7 +319,7 @@ Run the `deploy` script from the client machine to copy the
 necessary files and start the master and the workers:
 
    ```bash
-   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet opt/multinet/bin/deploy /opt/multinet/config/config.json
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet /opt/multinet/bin/deploy /opt/multinet/config/config.json
    ```
 
 #### Initialize Multinet topology
