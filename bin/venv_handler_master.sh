@@ -15,10 +15,8 @@
 
 if [ "$#" -eq 3 ]
 then
-    source /opt/venv_multinet/bin/activate
-    PYTHONPATH=$1
-    echo 'python $2 --json-config $3'
-    python $2 --json-config $3
+	echo 'source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3'
+    source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
 else
     echo "Invalid number of arguments."
     exit 1
