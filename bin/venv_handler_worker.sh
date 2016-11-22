@@ -16,8 +16,6 @@
 
 if [ "$#" -eq 4 ]
 then
-	echo 'MULTINET TEST'
-	echo 'source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --rest-host $3 --rest-port $4'
     source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --rest-host $3 --rest-port $4
 else
     echo "Invalid number of arguments."
