@@ -15,7 +15,6 @@
 
 if [ "$#" -eq 3 ]
 then
-	echo 'NSTAT'
     source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
 else
     echo "Invalid number of arguments."
