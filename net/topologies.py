@@ -25,9 +25,9 @@ def genHostName(i, j, dpid, n, k):
     worker_id = dpid
     host_index_offset = worker_id * k * n
     alpharethmetic_range = (j + i*n + host_index_offset)//numeric_range
-    while alpharethmetic_range > 0:
+    while alpharethmetic_range >= 0:
         name_prefix += name_prefix_list[alpharethmetic_range % len(name_prefix_list)]
-        alpharethmetic_range = alpharethmetic_range // len(name_prefix_list)
+        alpharethmetic_range = (alpharethmetic_range // len(name_prefix_list)) - 1
     name_prefix = name_prefix[::-1]
     return ('{0}{1}'.
                      format(name_prefix,
