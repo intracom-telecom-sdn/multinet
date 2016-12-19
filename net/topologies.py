@@ -20,7 +20,7 @@ def genHostName(i, j, dpid, n, k):
         str: The host name
     """
     name_prefix_list = list(string.ascii_lowercase + string.ascii_uppercase)
-    numeric_range = 999
+    numeric_range = 1000
     name_prefix = ''
     worker_id = dpid
     host_index_offset = worker_id * k * n
