@@ -75,7 +75,7 @@ class Multinet(mininet.net.Mininet):
                                         Packet_IN transmissions
             auto_detect_hosts (bool): Enable or disable automatic host detection
         """
-        self.__network_mask_bits = 8
+        self.__network_mask_bits = 16
         self.__base_network = '10.0.0.0'
         self.__network_ip_range = long(2 ** (32 - self.__network_mask_bits))
         self.__available_networks = long(2 ** self.__network_mask_bits -
