@@ -44,9 +44,6 @@ def genSwitchName(i, dpid, k):
     """
     worker_id = dpid
     switch_id = (worker_id * k) + i
-    #if switch_id > 9999:
-    #    raise AssertionError('Reached maximum number of switches')
-    #return '{0}{1}'.format(name_prefix_list[(i + dpid)//999], (i + dpid)%999)
     return '{0}'.format(switch_id)
 
 class LinearTopo(Topo):
