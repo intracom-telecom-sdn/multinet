@@ -18,7 +18,7 @@ RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/ss
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
-RUN mkdir -p /home/root/.ssh
-RUN touch /home/root/.ssh/known_hosts
+RUN mkdir -p /root/.ssh
+RUN touch /root/.ssh/known_hosts
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
