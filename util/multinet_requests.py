@@ -102,6 +102,7 @@ def make_post_request_runner(host_ip, host_port, route, data, queue):
       queue (multiprocessing.Queue): The queue where all the responses are stored
     """
     queue.put(make_post_request(host_ip, host_port, route, data))
+    return 0
 
 
 def handle_post_request(post_call, exit_on_fail=True):
@@ -148,8 +149,11 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             offset_idx += 1
 
         if opcode == 'start':
-            make_post_request_runner(worker_ip, worker_port, opcode, data,
-                                     result_queue)
+            # We do not want to have parallel jobs in case of start.
+            # We want serialization
+            processes.append(
+                make_post_request_runner(worker_ip, worker_port, opcode, data,
+                                         result_queue))
         else:
             process = multiprocessing.Process(target=make_post_request_runner,
                                               args=(worker_ip,
@@ -161,7 +165,8 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             process.start()
 
     for process in processes:
-        process.join()
+        if type(process) != type(0):
+            process.join()
 
     return [result_queue.get() for _ in processes]
 
