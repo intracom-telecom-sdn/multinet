@@ -20,13 +20,18 @@ def genHostName(i, j, dpid, n, k):
         str: The host name
     """
     name_prefix_list = list(string.ascii_lowercase + string.ascii_uppercase)
+    numeric_range = 1000
+    name_prefix = ''
     worker_id = dpid
     host_index_offset = worker_id * k * n
-    if not ((j + i*n + host_index_offset)//999 < len(name_prefix_list)):
-        raise AssertionError('Reached maximum number of hosts')
+    alpharethmetic_range = (j + i*n + host_index_offset)//numeric_range
+    while alpharethmetic_range >= 0:
+        name_prefix += name_prefix_list[alpharethmetic_range % len(name_prefix_list)]
+        alpharethmetic_range = (alpharethmetic_range // len(name_prefix_list)) - 1
+    name_prefix = name_prefix[::-1]
     return ('{0}{1}'.
-                     format(name_prefix_list[(j + i*n + host_index_offset)//999],
-                            (j + i*n + host_index_offset)%999))
+                     format(name_prefix,
+                            (j + i*n + host_index_offset)%numeric_range))
 
 def genSwitchName(i, dpid, k):
     """Generate the switch name
@@ -39,9 +44,6 @@ def genSwitchName(i, dpid, k):
     """
     worker_id = dpid
     switch_id = (worker_id * k) + i
-    if switch_id > 9999:
-        raise AssertionError('Reached maximum number of switches')
-    #return '{0}{1}'.format(name_prefix_list[(i + dpid)//999], (i + dpid)%999)
     return '{0}'.format(switch_id)
 
 class LinearTopo(Topo):
