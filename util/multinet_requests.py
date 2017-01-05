@@ -147,12 +147,16 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             data['dpid_offset'] = dpid_offset_list[offset_idx]
             offset_idx += 1
 
-        process = multiprocessing.Process(target=make_post_request_runner,
-                                          args=(worker_ip,
-                                                worker_port,
-                                                opcode,
-                                                data,
-                                                result_queue,))
+        if opcode == 'start':
+            make_post_request_runner(worker_ip, worker_port, opcode, data,
+                                     result_queue)
+        else:
+            process = multiprocessing.Process(target=make_post_request_runner,
+                                              args=(worker_ip,
+                                                    worker_port,
+                                                    opcode,
+                                                    data,
+                                                    result_queue,))
         processes.append(process)
         process.start()
 
