@@ -66,6 +66,7 @@ def start():
         status codes and bodies of the broadcasted requests
     """
     data = bottle.request.json
+    logging.info('[start  DEBUG MESSAGE] {0}'.format(data))
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
