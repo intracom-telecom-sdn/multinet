@@ -13,10 +13,10 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 def master_init_main():
     """Main
-    Send a POST request to the master 'init' endpoint, 
+    Send a POST request to the master 'init' endpoint,
     validate the response code and print the responses
 
-    Usage: 
+    Usage:
       bin/handlers/init_topos --json-config <path-to-json-conf>
 
     Example:
@@ -25,8 +25,9 @@ def master_init_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf, _ = m_util.parse_json_conf()
-    
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+
     res = m_util.master_cmd(conf['master_ip'],
                              conf['master_port'],
                              'init',

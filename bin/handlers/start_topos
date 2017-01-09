@@ -21,12 +21,9 @@ def start_handler_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    args = sys.argv[1:]
-    conf, _ = m_util.parse_json_conf()
-    data = None
-    if args:
-        if args[0] == 'False':
-            data = {'is_parallel':False}
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+    data = {'is_parallel':args.is_parallel}
     res = m_util.master_cmd(conf['master_ip'],
                                 conf['master_port'],
                                 'start', data)

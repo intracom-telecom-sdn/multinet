@@ -13,16 +13,7 @@ import argparse
 
 logging.getLogger().setLevel(logging.DEBUG)
 
-def parse_json_conf():
-    """Parse a JSON configuration file.
-    The path to this file is given as a command line argument.
-
-    Command Line Args:
-      --json-config (str): The path to the JSON configuration file
-
-    Returns:
-      dict: The parsed json configuration
-    """
+def parse_arguments():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--json-config',
@@ -32,13 +23,33 @@ def parse_json_conf():
                         action='store',
                         help='Configuration file (JSON)')
 
+    parser.add_argument('--is-parallel',
+                        required=False,
+                        type=bool,
+                        dest='is_parallel',
+                        action='store',
+                        default=False,
+                        help='Is parallel execution mode')
 
     args = parser.parse_args()
+    return args
+
+
+def parse_json_conf(json_config):
+    """Parse a JSON configuration file.
+    The path to this file is given as a command line argument.
+
+    Command Line Args:
+      --json-config (str): The path to the JSON configuration file
+
+    Returns:
+      dict: The parsed json configuration
+    """
 
     conf = {}
-    with open(args.json_config) as conf_file:
+    with open(json_config) as conf_file:
         conf = json.load(conf_file)
-    return conf, args.json_config
+    return conf
 
 
 def dpid_offset_range(num_vms):

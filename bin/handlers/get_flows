@@ -21,7 +21,8 @@ def get_flows_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf, _ = m_util.parse_json_conf()
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
 
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
