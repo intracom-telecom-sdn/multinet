@@ -25,9 +25,8 @@ def parse_arguments():
 
     parser.add_argument('--serial-requests',
                         required=False,
-                        type=bool,
                         dest='is_serial',
-                        action='store',
+                        action='store_true',
                         default=False,
                         help='Is request in serial execution mode')
 
