@@ -23,12 +23,13 @@ def parse_arguments():
                         action='store',
                         help='Configuration file (JSON)')
 
-    parser.add_argument('--disable-parallel-requests',
+    parser.add_argument('--serial-requests',
                         required=False,
-                        dest='is_parallel',
-                        action='store_false',
-                        default=True,
-                        help='Is parallel execution mode')
+                        type=bool,
+                        dest='is_serial',
+                        action='store',
+                        default=False,
+                        help='Is request in serial execution mode')
 
     args = parser.parse_args()
     return args
