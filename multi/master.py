@@ -65,7 +65,8 @@ def start():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start')
+    data = bottle.request.json
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
