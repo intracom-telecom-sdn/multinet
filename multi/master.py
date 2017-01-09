@@ -46,10 +46,10 @@ def init():
 
     logging.info('[ip list] {0}'.format(WORKER_IP_LIST))
 
-    topo_conf = bottle.request.json
+    data = bottle.request.json
     logging.info(topo_conf)
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init',
-                                topo_conf)
+                                data)
 
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
@@ -66,7 +66,6 @@ def start():
         status codes and bodies of the broadcasted requests
     """
     data = bottle.request.json
-    logging.info('[start  DEBUG MESSAGE] {0}'.format(data))
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)

@@ -146,6 +146,9 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
     Returns:
       list: A list of responses for all the POST requests performed
     """
+
+    if data is not None:
+        is_serial = data['is_serial']
     if opcode == 'init':
         dpid_offset_list = dpid_offset_range(len(worker_ip_list))
         offset_idx = 0
@@ -158,13 +161,15 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             data['dpid_offset'] = dpid_offset_list[offset_idx]
             offset_idx += 1
 
-        if opcode == 'start':
+        if is_serial:
             # We do not want to have parallel jobs in case of start.
             # We want serialization
+            logging.info('[{0}] is running in serial mode'.format(opcode))
             processes.append(
                 make_post_request_runner(worker_ip, worker_port, opcode, data,
                                          result_queue))
         else:
+            logging.info('[{0}] is running in parallel mode'.format(opcode))
             process = multiprocessing.Process(target=make_post_request_runner,
                                               args=(worker_ip,
                                                     worker_port,
