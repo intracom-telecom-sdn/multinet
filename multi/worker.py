@@ -57,7 +57,7 @@ def init():
         int(topo_conf['group_size']),
         int(topo_conf['group_delay']),
         int(topo_conf['hosts_per_switch']),
-        int(topo_conf['dpid_offset']),
+        int(data['dpid_offset']),
         topo_conf['traffic_generation_duration_ms'],
         topo_conf['interpacket_delay_ms']
         )
