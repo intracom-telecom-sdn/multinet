@@ -149,6 +149,11 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
 
     if data is not None:
         is_serial = data['is_serial']
+    else:
+        logging.info('[{0}] POST data is None. Setting is_serial to False'.
+                     format(opcode))
+        is_serial = False
+
     if opcode == 'init':
         dpid_offset_list = dpid_offset_range(len(worker_ip_list))
         offset_idx = 0
