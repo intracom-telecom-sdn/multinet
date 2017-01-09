@@ -47,7 +47,7 @@ def init():
     logging.info('[ip list] {0}'.format(WORKER_IP_LIST))
 
     data = bottle.request.json
-    logging.info(topo_conf)
+    logging.info('[init] topology type: {0}'.format(data['topo_type']))
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init',
                                 data)
 
