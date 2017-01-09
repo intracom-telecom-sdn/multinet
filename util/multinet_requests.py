@@ -25,7 +25,6 @@ def parse_arguments():
 
     parser.add_argument('--disable-parallel-requests',
                         required=False,
-                        type=bool,
                         dest='is_parallel',
                         action='store_false',
                         default=True,
