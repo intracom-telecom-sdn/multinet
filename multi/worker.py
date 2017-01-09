@@ -47,7 +47,7 @@ def init():
 
     global MININET_TOPO
     data = bottle.request.json
-    topo_conf = data['topo_type']
+    topo_conf = data['topo']
     MININET_TOPO = Multinet(
         topo_conf['controller_ip_address'],
         int(topo_conf['controller_of_port']),
