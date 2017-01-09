@@ -28,7 +28,7 @@ def parse_arguments():
                         type=bool,
                         dest='is_parallel',
                         action='store',
-                        default=False,
+                        default=True,
                         help='Is parallel execution mode')
 
     args = parser.parse_args()
