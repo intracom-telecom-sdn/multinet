@@ -14,6 +14,18 @@ import argparse
 logging.getLogger().setLevel(logging.DEBUG)
 
 def parse_arguments():
+    """Reads the arguments passed from command line.
+
+    Command line Args:
+      --json-config (str): Compulsory argument. The path to the JSON
+      configuration file.
+      --serial-requests (bool): Optional argument. Defines if the requests
+      will be sent from the master to the workers parallely, simultaneusly to
+      all workers, or serially, one worker each time.
+
+    Returns:
+      collection: An object containing the values of all arguments.
+    """
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--json-config',
@@ -36,10 +48,11 @@ def parse_arguments():
 
 def parse_json_conf(json_config):
     """Parse a JSON configuration file.
-    The path to this file is given as a command line argument.
+    The path to this file is given from command line argument --json-config
+    and passed as an argument in this function.
 
-    Command Line Args:
-      --json-config (str): The path to the JSON configuration file
+    Args:
+      json_config (str): The path to the JSON configuration file
 
     Returns:
       dict: The parsed json configuration

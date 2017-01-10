@@ -27,7 +27,6 @@ before_script:
 script:
   - source /opt/venv_multinet/bin/activate
   - bash /opt/multinet/bin/venv_handler_master.sh /opt/multinet /opt/multinet/bin/deploy /opt/multinet/config/test-config.json
-#  - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
   - cat /tmp/multinet/master_log.txt
   - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt
   - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt
@@ -37,5 +36,4 @@ script:
   - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt
   - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt
   - bash /opt/multinet/bin/venv_handler_master.sh /opt/multinet /opt/multinet/bin/cleanup /opt/multinet/config/test-config.json
-#  - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
   - deactivate
