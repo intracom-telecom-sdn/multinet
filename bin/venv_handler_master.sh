@@ -19,9 +19,9 @@ then
     then
         source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
     fi
-    if [ "$#" -eq 4 ] && [ "$4" == "true" ]
+    if [ "$#" -eq 4 ] && [ "$4" == "--serial-requests" ]
     then
-        source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3 --serial-requests
+        source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3 $4
     fi
 else
     echo "Invalid number of arguments."
