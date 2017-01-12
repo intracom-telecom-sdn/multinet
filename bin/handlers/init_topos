@@ -27,7 +27,7 @@ def master_init_main():
     """
     args = m_util.parse_arguments()
     conf = m_util.parse_json_conf(args.json_config)
-    data = {'topo':conf['topo']}
+    data = {'topo':conf['topo'], 'is_serial':args.is_serial}
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
                             'init',

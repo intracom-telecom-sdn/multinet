@@ -22,7 +22,7 @@ def stop_handler_main():
     """
     args = m_util.parse_arguments()
     conf = m_util.parse_json_conf(args.json_config)
-    data = None
+    data = {'is_serial':args.is_serial}
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
                             'stop', data)

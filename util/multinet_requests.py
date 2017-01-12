@@ -160,7 +160,7 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
       list: A list of responses for all the POST requests performed
     """
 
-    if data is not None and opcode == 'start':
+    if data is not None and 'is_serial' in data:
         is_serial = data['is_serial']
     else:
         logging.info('[{0}] POST data is None. Setting is_serial to False'.
