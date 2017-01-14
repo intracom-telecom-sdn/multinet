@@ -58,20 +58,15 @@ if __name__ == '__main__':
     copy_dest_ports = worker_port_list + [master_port] if master_port not in worker_port_list else worker_port_list
     for curr_ip, worker_port in zip(copy_dest_ips, copy_dest_ports):
         print('Initiating session with Multinet VM.')
-        if curr_ip in ssh_sessions:
-            session = ssh_sessions[curr_ip]
-        else:
-            session = util.netutil.ssh_connect_or_return(curr_ip, username,
-                                                         password, 10, ssh_port)
+        session = util.netutil.ssh_connect_or_return(curr_ip, username,
+                                                     password, 10, ssh_port)
+        if curr_ip not in ssh_sessions:
             ssh_sessions[curr_ip] = session
+            util.netutil.ssh_run_command(session, 'sudo mn -c')
 
         kill_remote_server(session, worker_port)
         kill_remote_server(session, master_port)
 
-        util.netutil.ssh_run_command(session, 'sudo mn -c')
-
         print('Delete remote Multinet directory.')
         util.netutil.ssh_run_command(session, 'rm -rf /tmp/multinet')
-    # Cleanup activities
-    for session in ssh_sessions:
         session.close()
