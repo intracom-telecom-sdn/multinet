@@ -180,13 +180,13 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             offset_idx += 1
 
         if is_serial:
-            # We do not want to have parallel jobs in case of start.
-            # We want serialization
+            # Serial send REST requests to workers
             logging.info('[{0}] is running in serial mode'.format(opcode))
             processes.append(
                 make_post_request_runner(worker_ip, worker_port, opcode, data,
                                          result_queue))
         else:
+            # Parallel send REST requests to workers
             logging.info('[{0}] is running in parallel mode'.format(opcode))
             process = multiprocessing.Process(target=make_post_request_runner,
                                               args=(worker_ip,
