@@ -23,7 +23,6 @@ def kill_remote_server(session, server_port):
     _, cmd_out, _ = util.netutil.ssh_run_command(session, get_pid)
     pid = str(cmd_out.read().decode()).strip().strip('-')
     util.netutil.ssh_run_command(session, 'sudo kill -9 {0}'.format(pid))
-    util.netutil.ssh_run_command(session, 'sudo mn -c')
 
 
 if __name__ == '__main__':
@@ -53,19 +52,17 @@ if __name__ == '__main__':
 
     total_worker_machines = len(worker_ips)
 
-    ssh_sessions = {}
     copy_dest_ips = worker_ips + [master_ip] if master_ip not in worker_ips else worker_ips
     copy_dest_ports = worker_port_list + [master_port] if master_port not in worker_port_list else worker_port_list
     for curr_ip, worker_port in zip(copy_dest_ips, copy_dest_ports):
         print('Initiating session with Multinet VM.')
         session = util.netutil.ssh_connect_or_return(curr_ip, username,
                                                      password, 10, ssh_port)
-        if curr_ip not in ssh_sessions:
-            ssh_sessions[curr_ip] = session
-            util.netutil.ssh_run_command(session, 'sudo mn -c')
 
         kill_remote_server(session, worker_port)
         kill_remote_server(session, master_port)
+
+        util.netutil.ssh_run_command(session, 'sudo mn -c')
 
         print('Delete remote Multinet directory.')
         util.netutil.ssh_run_command(session, 'rm -rf /tmp/multinet')
