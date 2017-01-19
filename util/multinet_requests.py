@@ -182,9 +182,8 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
         if is_serial:
             # Serial send REST requests to workers
             logging.info('[{0}] is running in serial mode'.format(opcode))
-            processes.append(
-                make_post_request_runner(worker_ip, worker_port, opcode, data,
-                                         result_queue))
+            processes.append(make_post_request(worker_ip, worker_port, opcode,
+                                               data))
         else:
             # Parallel send REST requests to workers
             logging.info('[{0}] is running in parallel mode'.format(opcode))
@@ -197,11 +196,13 @@ def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
             processes.append(process)
             process.start()
 
-    for process in processes:
-        if type(process) != type(0):
+    if is_serial:
+        return processes
+    else:
+        for process in processes:
             process.join()
+        return [result_queue.get() for _ in processes]
 
-    return [result_queue.get() for _ in processes]
 
 
 def aggregate_broadcast_response(responses):
