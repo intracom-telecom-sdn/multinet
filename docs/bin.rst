@@ -1,17 +1,17 @@
-multinet_src.bin package
-========================
+bin package
+===========
 
 Subpackages
 -----------
 
 .. toctree::
 
-    multinet_src.bin.handlers
+    bin.handlers
 
 Module contents
 ---------------
 
-.. automodule:: multinet_src.bin
+.. automodule:: bin
     :members:
     :undoc-members:
     :show-inheritance:
