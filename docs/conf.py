@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# nstat.src documentation build configuration file, created by
+# mutlinet documentation build configuration file, created by
 # sphinx-quickstart on Sun Jan 15 15:07:09 2017.
 #
 # This file is execfile()d with the current directory set to its
