@@ -67,8 +67,9 @@ mkdir $BASE_DIR/$VENV_DIR_MULTINET
 virtualenv --system-site-packages $BASE_DIR/$VENV_DIR_MULTINET
 
 git clone -b master https://github.com/intracom-telecom-sdn/multinet.git $BASE_DIR"/multinet"
+wget https://raw.githubusercontent.com/intracom-telecom-sdn/multinet/master/deploy/requirements.txt -P $BASE_DIR
 source $BASE_DIR/$VENV_DIR_MULTINET/bin/activate
-pip $pip_options install -r $BASE_DIR"/multinet/deploy/requirements.txt"
+pip $pip_options install -r $BASE_DIR/requirements.txt
 pip install -U pytest
 deactivate
 
