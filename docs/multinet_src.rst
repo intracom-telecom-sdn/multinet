@@ -6,8 +6,10 @@ Subpackages
 
 .. toctree::
 
+    multinet_src.bin
     multinet_src.multi
     multinet_src.net
+    multinet_src.test
     multinet_src.util
 
 Module contents
