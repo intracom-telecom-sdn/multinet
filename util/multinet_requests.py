@@ -97,19 +97,20 @@ def make_post_request(host_ip, host_port, route, data=None):
     route_name = route.split('/')[0]
     logging.info('[{0}_topology_handler][url] {1}'.format(route_name, url))
     if data is None:
-        post_call = session.post(url)
+        post_call = session.post(url, timeout=None)
     else:
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         post_call = session.post(
             url,
             data=json.dumps(data),
-            headers=headers)
+            headers=headers, timeout=None)
     logging.info('[{0}_topology_handler][response status code] {1}'.
           format(route_name, post_call.status_code))
     logging.info('[{0}_topology_handler][response data] {1}'.
           format(route_name, post_call.text))
-
-    return post_call
+    responce = {'status_code':post_call.status_code, 'text':post_call.text}
+    post_call.close()
+    return responce
 
 
 def make_post_request_runner(host_ip, host_port, route, data, queue):
@@ -218,8 +219,8 @@ def aggregate_broadcast_response(responses):
       body (list): The list of all the responses text
     """
     status = 200 if all(
-        r.status_code >= 200 and r.status_code < 300 for r in responses) else 500
-    body = json.dumps([r.text for r in responses])
+        r['status_code'] >= 200 and r['status_code'] < 300 for r in responses) else 500
+    body = json.dumps([r['text'] for r in responses])
     return status, body
 
 
