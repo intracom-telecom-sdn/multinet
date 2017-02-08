@@ -370,7 +370,15 @@ command from the client machine:
    ```
 
 The above will send a `start` command to every worker node in parallel and
-initiate the gradual connections of the topologies.
+initiate the gradual connections of the topologies. In case we want to impose
+serialization to this process, we can use the flag `--serial-requests`. In
+this way all the requests from the master to the workers to start their
+topology will be send one by one serially.
+
+   ```bash
+   [user@machine /opt/multinet/]$./bin/venv_handler_master.sh /opt/multinet /opt/multinet/bin/handlers/start_topos /opt/multinet/config/config.json --serial-requests
+   ```
+
 If _all_ topologies are connected successfully you should get a `200 OK`
 output message on the client machine. If any topology fails to connect,
 an error message will be printed.
