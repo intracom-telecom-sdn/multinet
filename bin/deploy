@@ -24,8 +24,9 @@ if __name__ == '__main__':
     Command Line Arguments:
         json-config (str): Path to the JSON configuration file to be used
     """
-
-    conf, config_filename = m_util.parse_json_conf()
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+    config_filename = args.json_config
     config_filename = config_filename.split('/')[-1]
 
     worker_remote_path = '/tmp/multinet/multi/worker.py'

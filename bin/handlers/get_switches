@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Get the number of started switches
-Command line handler to get the number of started switches 
+Command line handler to get the number of started switches
 from the distributed topologies
 """
 
@@ -9,10 +9,10 @@ import util.multinet_requests as m_util
 
 def get_switches_main():
     """Main
-    Send a POST request to the master 'get_switches' endpoint, 
+    Send a POST request to the master 'get_switches' endpoint,
     validate the response code and print the responses
 
-    Usage: 
+    Usage:
       bin/handler/get_switches --json-config <path-to-json-conf>
 
     Example:
@@ -21,11 +21,12 @@ def get_switches_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf, _ = m_util.parse_json_conf()
-
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+    data = {'is_serial':args.is_serial}
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
-                            'get_switches')
+                            'get_switches', data)
 
     m_util.handle_post_request(res, exit_on_fail=False)
 

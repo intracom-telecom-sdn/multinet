@@ -13,9 +13,16 @@
 # 2. Handler path
 # 3. Config path. The json configuration file path.
 
-if [ "$#" -eq 3 ]
+if [ "$#" -ge 3 ]
 then
-    source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
+    if [ "$#" -eq 3 ]
+    then
+        source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3
+    fi
+    if [ "$#" -eq 4 ] && [ "$4" == "--serial-requests" ]
+    then
+        source /opt/venv_multinet/bin/activate; PYTHONPATH=$1 python $2 --json-config $3 $4
+    fi
 else
     echo "Invalid number of arguments."
     exit 1

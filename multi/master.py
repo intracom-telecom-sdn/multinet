@@ -45,11 +45,10 @@ def init():
     """
 
     logging.info('[ip list] {0}'.format(WORKER_IP_LIST))
-
-    topo_conf = bottle.request.json
-    logging.info(topo_conf)
+    data = bottle.request.json
+    logging.info('[init] topology type: {0}'.format(data['topo']['topo_type']))
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init',
-                                topo_conf)
+                                data)
 
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
@@ -65,7 +64,8 @@ def start():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start')
+    data = bottle.request.json
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -80,8 +80,9 @@ def detect_hosts():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
+    data = bottle.request.json
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
-                                'detect_hosts')
+                                'detect_hosts', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -96,10 +97,12 @@ def get_switches():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
+    data = bottle.request.json
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
-                                'get_switches')
+                                'get_switches', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
+
 
 @bottle.route('/get_flows', method='POST')
 def get_flows():
@@ -111,9 +114,10 @@ def get_flows():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
+    data = bottle.request.json
     t_start = time.time()
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
-                                'get_flows')
+                                'get_flows', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     get_flow_latency = time.time() - t_start
     logging.info('[get_flows] Flow latency interval on master: {0} [sec]'.
@@ -131,7 +135,8 @@ def stop():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'stop')
+    data = bottle.request.json
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'stop', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -146,26 +151,12 @@ def ping_all():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
-    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'ping_all')
+    data = bottle.request.json
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'ping_all',
+                                data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
-
-def rest_start():
-    """
-    Parse the command line arguments and start the master server
-    """
-    global WORKER_PORT_LIST
-    global WORKER_IP_LIST
-
-    runtime_config, _ = m_util.parse_json_conf()
-
-    master_ip = runtime_config['master_ip']
-    master_port = runtime_config['master_port']
-    WORKER_IP_LIST = runtime_config['worker_ip_list']
-    WORKER_PORT_LIST = runtime_config['worker_port_list']
-
-    bottle.run(host=master_ip, port=master_port, debug=True)
 
 @bottle.route('/generate_traffic', method='POST')
 def generate_traffic():
@@ -177,11 +168,29 @@ def generate_traffic():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
     """
+    data = bottle.request.json
     reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST,
-                                'generate_traffic')
+                                'generate_traffic', data)
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
+
+def rest_start():
+    """
+    Parse the command line arguments and start the master server
+    """
+    global WORKER_PORT_LIST
+    global WORKER_IP_LIST
+
+    args = m_util.parse_arguments()
+    runtime_config = m_util.parse_json_conf(args.json_config)
+
+    master_ip = runtime_config['master_ip']
+    master_port = runtime_config['master_port']
+    WORKER_IP_LIST = runtime_config['worker_ip_list']
+    WORKER_PORT_LIST = runtime_config['worker_port_list']
+
+    bottle.run(host=master_ip, port=master_port, debug=True)
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)

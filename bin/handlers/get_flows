@@ -21,11 +21,12 @@ def get_flows_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf, _ = m_util.parse_json_conf()
-
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+    data = {'is_serial':args.is_serial}
     res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
-                            'get_flows')
+                            'get_flows', data)
 
     m_util.handle_post_request(res, exit_on_fail=False)
 

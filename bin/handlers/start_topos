@@ -4,14 +4,15 @@ Command line handler to start the distributed topologies
 """
 
 import util.multinet_requests as m_util
+import sys
 
 
 def start_handler_main():
     """Main
-    Send a POST request to the master 'start' endpoint, 
+    Send a POST request to the master 'start' endpoint,
     validate the response code and print the responses
 
-    Usage: 
+    Usage:
       bin/handler/start_topos --json-config <path-to-json-conf>
 
     Example:
@@ -20,11 +21,12 @@ def start_handler_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf, _ = m_util.parse_json_conf()
-
+    args = m_util.parse_arguments()
+    conf = m_util.parse_json_conf(args.json_config)
+    data = {'is_serial':args.is_serial}
     res = m_util.master_cmd(conf['master_ip'],
-                            conf['master_port'],
-                            'start')
+                                conf['master_port'],
+                                'start', data)
 
     m_util.handle_post_request(res, exit_on_fail=True)
 
