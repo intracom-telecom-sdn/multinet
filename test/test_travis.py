@@ -10,20 +10,14 @@ def config():
     data = {}
     with open('config/test-config.json') as test_config:
         data = json.load(test_config)
-        print('config/test-config.json  was successfully parsed to dictionary')
     return data
 
 
 def test_init(config):
-    if 'topo' in config:
-        print('config[topo] : {0}'.format(config['topo']))
-    else:
-        print('json config file was not parsed successfully or topo key does '
-              'not exist')
     res = m_util.master_cmd(config['master_ip'],
                             config['master_port'],
                             'init',
-                            config['topo'])
+                            config)
     assert res['status_code'] == 200
 
 def test_start(config):
