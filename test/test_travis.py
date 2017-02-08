@@ -33,7 +33,7 @@ def test_get_switches(config):
     assert res['status_code'] == 200
 
     dpid_range = m_util.dpid_offset_range(len(config['worker_ip_list']))
-    res_json = json.loads(res.text)
+    res_json = json.loads(res['text'])
     i=0
     for d in res_json:
         for k, v in json.loads(d).items():
