@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/intracom-telecom-sdn/multinet.svg?branch=squash_commits)](https://travis-ci.org/intracom-telecom-sdn/multinet)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?maxAge=2592000)](https://hub.docker.com/r/intracom/multinet/)
 [![Documentation Status](https://readthedocs.org/projects/multinet/badge/?version=latest)](http://multinet.readthedocs.io/en/latest/?badge=latest)
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/d61bb50c971a4b27bfa557762d2e569f/badge.svg)](https://www.quantifiedcode.com/app/project/d61bb50c971a4b27bfa557762d2e569f)
 
 
 # Multinet
